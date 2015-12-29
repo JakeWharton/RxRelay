@@ -44,7 +44,7 @@ public abstract class Relay<T, R> extends Observable<R> implements Action1<T> {
    * To protect a {@code Relay} from this danger, you can convert it into a {@link SerializedRelay}
    * with code like the following:
    * <p><pre>{@code
-   * mySafeRelay = myUnsafeRelay.toSerialized();
+   * safeRelay = unsafeRelay.toSerialized();
    * }</pre>
    *
    * @return SerializedRelay wrapping the current Relay

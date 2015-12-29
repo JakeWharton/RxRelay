@@ -80,7 +80,7 @@ Usage
     Wraps a `Relay` so that it is safe to call `call()` from different threads.
 
     ```java
-    mySafeRelay = myUnsafeRelay.toSerialized();
+    safeRelay = unsafeRelay.toSerialized();
     ```
 
 All relays use the `Relay` base class which also allows custom implementations. There is also
