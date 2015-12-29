@@ -1,9 +1,20 @@
 RxRelay
 =======
 
-Objects that are both an `Observable` and an `Action1`.
+Relays are [RxJava][rx] types which are both an `Observable` and an `Action1`.
 
 Basically: A `Subject` except without the ability to call `onComplete` or `onError`.
+
+Subjects are useful to bridge the gap between non-Rx APIs. However, they are stateful in a damaging
+way: when they receive an `onComplete` or `onError` they no longer become usable for moving data.
+This is the observable contract and sometimes it is the desired behavior. Most times it is not.
+
+Relays are simply Subjects without the aforementioned property. They allow you to bridge non-Rx
+APIs into Rx easily, and without the worry of accidentally triggering a terminal state.
+
+As more of your code moves to reactive, the need for Subjects and Relays should diminish. In the
+transitional period, or for quickly adapting a non-Rx API, Relays provide the convenience of
+Subjects without the worry of the statefulness of terminal event behavior.
 
 
 
@@ -46,4 +57,5 @@ License
 
 
 
+ [rx]: https://github.com/ReactiveX/RxJava/
  [snap]: https://oss.sonatype.org/content/repositories/snapshots/
