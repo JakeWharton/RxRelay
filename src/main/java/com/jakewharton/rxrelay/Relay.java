@@ -33,8 +33,7 @@ public abstract class Relay<T, R> extends Observable<R> implements Action1<T> {
   public abstract boolean hasObservers();
 
   /**
-   * Wraps a {@link Relay} so that it is safe to call its various {@code on} methods from different
-   * threads.
+   * Wraps a {@link Relay} so that it is safe to call {@link #call} from different threads.
    * <p>
    * When you use an ordinary {@link Relay} as a {@link Action1}, you must take care not to call
    * its {@link Action1#call} method from multiple threads, as this could lead to non-serialized
