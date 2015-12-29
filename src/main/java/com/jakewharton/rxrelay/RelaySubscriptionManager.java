@@ -209,11 +209,11 @@ import rx.subscriptions.Subscriptions;
     }
 
     @Override public void onError(Throwable e) {
-      actual.onError(e);
+      throw new AssertionError(); // Should never be called in normal operation.
     }
 
     @Override public void onCompleted() {
-      actual.onCompleted();
+      throw new AssertionError(); // Should never be called in normal operation.
     }
 
     /**
