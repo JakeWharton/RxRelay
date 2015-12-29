@@ -29,7 +29,7 @@ import rx.functions.Action1;
  *
  * @param <T> the type of items expected to be observed by the {@code Observer}
  */
-class SerializedAction1<T> implements Action1<T> {
+final class SerializedAction1<T> implements Action1<T> {
   private final Action1<? super T> actual;
 
   private boolean emitting;
