@@ -17,6 +17,80 @@ transitional period, or for quickly adapting a non-Rx API, Relays provide the co
 Subjects without the worry of the statefulness of terminal event behavior.
 
 
+Usage
+-----
+
+ *  **`BehaviorRelay`**
+
+    Relay that emits the most recent item it has observed and all subsequent observed items to each
+    subscribed `Observer`.
+
+    ```java
+    // observer will receive all events.
+    BehaviorRelay<Object> relay = BehaviorRelay.create("default");
+    relay.subscribe(observer);
+    relay.call("one");
+    relay.call("two");
+    relay.call("three");
+    ```
+    ```java
+    // observer will receive the "one", "two" and "three" events, but not "zero"
+    BehaviorRelay<Object> relay = BehaviorRelay.create("default");
+    relay.call("zero");
+    relay.call("one");
+    relay.subscribe(observer);
+    relay.call("two");
+    relay.call("three");
+    ```
+
+ *  **`PublishRelay`**
+
+    Relay that, once an `Observer` has subscribed, emits all subsequently observed items to the
+    subscriber.
+
+    ```java
+    PublishRelay<Object> relay = PublishRelay.create();
+    // observer1 will receive all events
+    relay.subscribe(observer1);
+    relay.call("one");
+    relay.call("two");
+    ```
+    ```java
+    // observer2 will only receive "three"
+    relay.subscribe(observer2);
+    relay.call("three");
+    ```
+
+ *  **`ReplayRelay`**
+
+    Relay that buffers all items it observes and replays them to any `Observer` that subscribes.
+
+    ```java
+    ReplayRelay<Object> relay = ReplayRelay.create();
+    relay.call("one");
+    relay.call("two");
+    relay.call("three");
+    // both of the following will get the events from above
+    relay.subscribe(observer1);
+    relay.subscribe(observer2);
+    ```
+
+ *  **`SerializedRelay`**
+
+    Wraps a `Relay` so that it is safe to call `call()` from different threads.
+
+    ```java
+    mySafeRelay = myUnsafeRelay.toSerialized();
+    ```
+
+All relays use the `Relay` base class which also allows custom implementations. There is also
+`TestRelay` for operating on a `TestScheduler`.
+
+See [the Javaodc][docs] for more information.
+
+(There is no `AsyncRelay` since relays have no terminal events to support its behavior.)
+
+
 
 Download
 --------
@@ -58,4 +132,5 @@ License
 
 
  [rx]: https://github.com/ReactiveX/RxJava/
+ [docs]: http://jakewharton.github.io/RxRelay/
  [snap]: https://oss.sonatype.org/content/repositories/snapshots/
