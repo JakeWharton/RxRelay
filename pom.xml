@@ -11,7 +11,7 @@
 
   <groupId>com.jakewharton.rxrelay</groupId>
   <artifactId>rxrelay</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
 
   <name>RxRelay</name>
   <description>Objects that are both an Observable and an Action1.</description>
