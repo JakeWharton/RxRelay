@@ -131,7 +131,7 @@ import rx.subscriptions.Subscriptions;
 
   /** State-machine representing the termination state and active RelayObservers. */
   static final class State<T> {
-    private static final State EMPTY = new State(new RelayObserver[0]);
+    static final State EMPTY = new State(new RelayObserver[0]);
 
     final RelayObserver[] observers;
 
