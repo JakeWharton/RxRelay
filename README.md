@@ -86,7 +86,7 @@ Usage
 All relays use the `Relay` base class which also allows custom implementations. There is also
 `TestRelay` for operating on a `TestScheduler`.
 
-See [the Javaodc][docs] for more information.
+See [the Javadoc][docs] for more information.
 
 (There is no `AsyncRelay` since relays have no terminal events to support its behavior.)
 
