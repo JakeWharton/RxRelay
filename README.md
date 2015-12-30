@@ -54,8 +54,6 @@ Usage
     relay.subscribe(observer1);
     relay.call("one");
     relay.call("two");
-    ```
-    ```java
     // observer2 will only receive "three"
     relay.subscribe(observer2);
     relay.call("three");
