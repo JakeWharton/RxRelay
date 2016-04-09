@@ -17,7 +17,6 @@ package com.jakewharton.rxrelay;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Scheduler;
 import rx.functions.Action1;
 
 /** Represents an object that is both an Observable and an Action1. */
