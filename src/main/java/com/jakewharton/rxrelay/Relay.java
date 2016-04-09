@@ -26,8 +26,8 @@ public abstract class Relay<T, R> extends Observable<R> implements Action1<T> {
   }
 
   /**
-   * Portrays a object of an Action1 implementation as a simple Relay object. This is useful, for instance,
-   * when you have an implementation of an implementation of Relay but you want to hide the Observable properties and
+   * Portrays an object of a Relay implementation as a simple Action1 object. This is useful, for instance,
+   * when you have an implementation of a Relay but you want to hide the Observable properties and
    * methods of this subclass from whomever you are passing the Relay to.
    *
    * @return an Action1 that hides the Observable identity of this Relay.
