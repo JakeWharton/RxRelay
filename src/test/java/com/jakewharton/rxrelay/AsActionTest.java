@@ -12,22 +12,24 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 public final class AsActionTest {
-    @Test public void testHiding() {
-        PublishRelay<Integer> src = PublishRelay.create();
 
-        Action1<Integer> action = src.asAction();
+  @Test
+  public void testHiding() {
+   PublishRelay<Integer> src = PublishRelay.create();
 
-        assertFalse(action instanceof PublishRelay);
+   Action1<Integer> action = src.asAction();
 
-        @SuppressWarnings("unchecked")
-        Observer<Object> o = mock(Observer.class);
+   assertFalse(action instanceof PublishRelay);
 
-        src.subscribe(o);
+   @SuppressWarnings("unchecked")
+   Observer<Object> o = mock(Observer.class);
 
-        action.call(1);
+   src.subscribe(o);
 
-        verify(o).onNext(1);
-        verify(o, never()).onCompleted();
-        verify(o, never()).onError(any(Throwable.class));
-    }
+   action.call(1);
+
+   verify(o).onNext(1);
+   verify(o, never()).onCompleted();
+   verify(o, never()).onError(any(Throwable.class));
+  }
 }
