@@ -30,10 +30,6 @@ public abstract class Relay<T, R> extends Observable<R> implements Action1<T> {
    * Portrays a object of an Action1 implementation as a simple Relay object. This is useful, for instance,
    * when you have an implementation of an implementation of Relay but you want to hide the Observable properties and
    * methods of this subclass from whomever you are passing the Relay to.
-   * <dl>
-   *  <dt><b>Scheduler:</b></dt>
-   *  <dd>{@code asAction} does not operate by default on a particular {@link Scheduler}.</dd>
-   * </dl>
    *
    * @return an Action1 that hides the Observable identity of this Relay.
    */
