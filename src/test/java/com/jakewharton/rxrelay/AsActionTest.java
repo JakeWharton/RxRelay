@@ -1,35 +1,27 @@
 package com.jakewharton.rxrelay;
 
 import org.junit.Test;
-
-import rx.Observer;
 import rx.functions.Action1;
+import rx.observers.TestSubscriber;
 
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 public final class AsActionTest {
 
-  @Test
-  public void testHiding() {
-   PublishRelay<Integer> src = PublishRelay.create();
+  @Test public void asActionHiding() {
+    PublishRelay<Integer> src = PublishRelay.create();
 
-   Action1<Integer> action = src.asAction();
+    Action1<Integer> action = src.asAction();
 
-   assertFalse(action instanceof PublishRelay);
+    assertFalse(action instanceof PublishRelay);
 
-   @SuppressWarnings("unchecked")
-   Observer<Object> o = mock(Observer.class);
+    TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
 
-   src.subscribe(o);
+    src.subscribe(subscriber);
 
-   action.call(1);
+    action.call(1);
 
-   verify(o).onNext(1);
-   verify(o, never()).onCompleted();
-   verify(o, never()).onError(any(Throwable.class));
+    subscriber.assertValue(1);
+    subscriber.assertNoTerminalEvent();
   }
 }
