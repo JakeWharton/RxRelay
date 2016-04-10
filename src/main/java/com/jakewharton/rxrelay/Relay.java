@@ -26,6 +26,22 @@ public abstract class Relay<T, R> extends Observable<R> implements Action1<T> {
   }
 
   /**
+   * Portrays an object of a Relay implementation as a simple Action1 object. This is useful, for instance,
+   * when you have an implementation of a Relay but you want to hide the Observable properties and
+   * methods of this subclass from whomever you are passing the Relay to.
+   *
+   * @return an Action1 that hides the Observable identity of this Relay.
+   */
+  public Action1<T> asAction() {
+    return new Action1<T>() {
+      @Override
+      public void call(T t) {
+        Relay.this.call(t);
+      }
+    };
+  }
+
+  /**
    * Indicates whether the {@link Relay} has {@link Observer Observers} subscribed to it.
    *
    * @return true if there is at least one Observer subscribed to this Relay, false otherwise
