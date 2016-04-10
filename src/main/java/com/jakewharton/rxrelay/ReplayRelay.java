@@ -516,7 +516,7 @@ public class ReplayRelay<T> extends Relay<T, T> {
       return true;
     }
 
-    private NodeList.Node<Object> replayObserverFromIndex(NodeList.Node<Object> l,
+    NodeList.Node<Object> replayObserverFromIndex(NodeList.Node<Object> l,
         RelayObserver<? super T> observer) {
       while (l != tail()) {
         accept(observer, l.next);
@@ -525,7 +525,7 @@ public class ReplayRelay<T> extends Relay<T, T> {
       return l;
     }
 
-    private NodeList.Node<Object> replayObserverFromIndexTest(NodeList.Node<Object> l,
+    NodeList.Node<Object> replayObserverFromIndexTest(NodeList.Node<Object> l,
         RelayObserver<? super T> observer, long now) {
       while (l != tail()) {
         acceptTest(observer, l.next, now);
