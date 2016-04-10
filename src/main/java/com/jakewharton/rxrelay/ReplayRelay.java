@@ -294,12 +294,12 @@ public class ReplayRelay<T> extends Relay<T, T> {
   }
 
   /** The state storing the history and the references. */
-  private final ReplayState<T, ?> state;
+  private final ReplayState<T> state;
   /** The manager of subscribers. */
   private final RelaySubscriptionManager<T> ssm;
 
   ReplayRelay(OnSubscribe<T> onSubscribe, RelaySubscriptionManager<T> ssm,
-      ReplayState<T, ?> state) {
+      ReplayState<T> state) {
     super(onSubscribe);
     this.ssm = ssm;
     this.state = state;
@@ -350,7 +350,7 @@ public class ReplayRelay<T> extends Relay<T, T> {
    * @param <T> the input and output type
    */
   private static final class UnboundedReplayState<T> extends AtomicInteger
-      implements ReplayState<T, Integer> {
+      implements ReplayState<T> {
     private final NotificationLite<T> nl = NotificationLite.instance();
     /** The buffer. */
     private final ArrayList<Object> list;
@@ -450,7 +450,7 @@ public class ReplayRelay<T> extends Relay<T, T> {
    *
    * @param <T> the input and output type
    */
-  private static final class BoundedState<T> implements ReplayState<T, NodeList.Node<Object>> {
+  private static final class BoundedState<T> implements ReplayState<T> {
     final NodeList<Object> list;
     final EvictionPolicy evictionPolicy;
     final Func1<Object, Object> enterTransform;
@@ -610,9 +610,8 @@ public class ReplayRelay<T> extends Relay<T, T> {
    * General API for replay state management.
    *
    * @param <T> the input and output type
-   * @param <I> the index type
    */
-  private interface ReplayState<T, I> {
+  private interface ReplayState<T> {
     /**
      * Replay contents to the given observer.
      *
