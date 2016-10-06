@@ -25,7 +25,6 @@ import rx.Observer;
 import rx.Scheduler;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.internal.util.UtilityFunctions;
 import rx.schedulers.Timestamped;
 
 /**
