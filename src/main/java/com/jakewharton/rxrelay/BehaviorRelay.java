@@ -18,7 +18,6 @@ package com.jakewharton.rxrelay;
 import com.jakewharton.rxrelay.RelaySubscriptionManager.RelayObserver;
 import java.lang.reflect.Array;
 import rx.Observer;
-import rx.annotations.Beta;
 import rx.functions.Action1;
 
 /**
@@ -115,7 +114,7 @@ public class BehaviorRelay<T> extends Relay<T, T> {
    *
    * @return true if and only if the relay has some value.
    */
-  @Beta public boolean hasValue() {
+  public boolean hasValue() {
     return state.getLatest() != null;
   }
 
@@ -127,7 +126,7 @@ public class BehaviorRelay<T> extends Relay<T, T> {
    * @return the current value or {@code null} if the Relay doesn't have a value,
    * has terminated or has an actual {@code null} as a valid value.
    */
-  @Beta public T getValue() {
+  public T getValue() {
     Object o = state.getLatest();
     if (o != null) {
       return NotificationLite.getValue(o);
@@ -143,7 +142,7 @@ public class BehaviorRelay<T> extends Relay<T, T> {
    * @return the array {@code a} if it had enough capacity or a new array containing the available
    * values
    */
-  @Beta @SuppressWarnings("unchecked") public T[] getValues(T[] a) {
+  @SuppressWarnings("unchecked") public T[] getValues(T[] a) {
     Object o = state.getLatest();
     if (o != null) {
       if (a.length == 0) {
@@ -170,7 +169,7 @@ public class BehaviorRelay<T> extends Relay<T, T> {
    * @since (If this graduates from being an Experimental class method, replace this parenthetical
    *with the release number)
    */
-  @SuppressWarnings("unchecked") @Beta public Object[] getValues() {
+  @SuppressWarnings("unchecked") public Object[] getValues() {
     T[] r = getValues((T[]) EMPTY_ARRAY);
     if (r == EMPTY_ARRAY) {
       return new Object[0]; // don't leak the default empty array.

@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import rx.Observer;
 import rx.Scheduler;
-import rx.annotations.Beta;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.internal.util.UtilityFunctions;
@@ -855,18 +854,18 @@ public class ReplayRelay<T> extends Relay<T, T> {
    *
    * @return the number of items available
    */
-  @Beta public int size() {
+  public int size() {
     return state.size();
   }
 
   /**
    * @return true if the Relay holds at least one event available for replay
    */
-  @Beta public boolean hasAnyValue() {
+  public boolean hasAnyValue() {
     return !state.isEmpty();
   }
 
-  @Beta public boolean hasValue() {
+  public boolean hasValue() {
     return hasAnyValue();
   }
 
@@ -878,7 +877,7 @@ public class ReplayRelay<T> extends Relay<T, T> {
    * @return the array {@code a} if it had enough capacity or a new array containing the available
    * values
    */
-  @Beta public T[] getValues(T[] a) {
+  public T[] getValues(T[] a) {
     return state.toArray(a);
   }
 
@@ -894,7 +893,7 @@ public class ReplayRelay<T> extends Relay<T, T> {
    *with the release number)
    */
   @SuppressWarnings("unchecked")
-  @Beta public Object[] getValues() {
+  public Object[] getValues() {
     T[] r = getValues((T[]) EMPTY_ARRAY);
     if (r == EMPTY_ARRAY) {
       return new Object[0]; // don't leak the default empty array.
@@ -902,7 +901,7 @@ public class ReplayRelay<T> extends Relay<T, T> {
     return r;
   }
 
-  @Beta public T getValue() {
+  public T getValue() {
     return state.latest();
   }
 }
