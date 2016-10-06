@@ -25,7 +25,6 @@ import rx.Subscriber;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Actions;
-import rx.internal.operators.NotificationLite;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -44,8 +43,6 @@ import rx.subscriptions.Subscriptions;
   Action1<RelayObserver<T>> onStart = Actions.empty();
   /** Action called after the subscriber has been added to the state. */
   Action1<RelayObserver<T>> onAdded = Actions.empty();
-  /** The notification lite. */
-  final NotificationLite<T> nl = NotificationLite.instance();
 
   RelaySubscriptionManager() {
     super(State.EMPTY);
@@ -221,9 +218,8 @@ import rx.subscriptions.Subscriptions;
      * prevents the emitFirst to run if not already run.
      *
      * @param n the NotificationLite value
-     * @param nl the type-appropriate notification lite object
      */
-    void emitNext(Object n, final NotificationLite<T> nl) {
+    void emitNext(Object n) {
       if (!fastPath) {
         synchronized (this) {
           first = false;
@@ -237,7 +233,7 @@ import rx.subscriptions.Subscriptions;
         }
         fastPath = true;
       }
-      nl.accept(actual, n);
+      NotificationLite.accept(actual, n);
     }
 
     /**
@@ -245,9 +241,8 @@ import rx.subscriptions.Subscriptions;
      * value and drains the queue as long as possible.
      *
      * @param n the NotificationLite value
-     * @param nl the type-appropriate notification lite object
      */
-    void emitFirst(Object n, final NotificationLite<T> nl) {
+    void emitFirst(Object n) {
       synchronized (this) {
         if (!first || emitting) {
           return;
@@ -256,7 +251,7 @@ import rx.subscriptions.Subscriptions;
         emitting = n != null;
       }
       if (n != null) {
-        emitLoop(null, n, nl);
+        emitLoop(null, n);
       }
     }
 
@@ -265,21 +260,20 @@ import rx.subscriptions.Subscriptions;
      *
      * @param localQueue the initial queue contents
      * @param current the current content to emit
-     * @param nl the type-appropriate notification lite object
      */
-    private void emitLoop(List<Object> localQueue, Object current, final NotificationLite<T> nl) {
+    private void emitLoop(List<Object> localQueue, Object current) {
       boolean once = true;
       boolean skipFinal = false;
       try {
         do {
           if (localQueue != null) {
             for (Object n : localQueue) {
-              accept(n, nl);
+              accept(n);
             }
           }
           if (once) {
             once = false;
-            accept(current, nl);
+            accept(current);
           }
           synchronized (this) {
             localQueue = queue;
@@ -304,11 +298,10 @@ import rx.subscriptions.Subscriptions;
      * Dispatches a NotificationLite value to the actual Observer.
      *
      * @param n the value to dispatch
-     * @param nl the type-appropriate notification lite object
      */
-    private void accept(Object n, final NotificationLite<T> nl) {
+    private void accept(Object n) {
       if (n != null) {
-        nl.accept(actual, n);
+        NotificationLite.accept(actual, n);
       }
     }
 

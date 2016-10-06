@@ -26,7 +26,6 @@ import rx.Scheduler;
 import rx.annotations.Beta;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.internal.operators.NotificationLite;
 import rx.internal.util.UtilityFunctions;
 import rx.schedulers.Timestamped;
 
@@ -351,7 +350,6 @@ public class ReplayRelay<T> extends Relay<T, T> {
    */
   private static final class UnboundedReplayState<T> extends AtomicInteger
       implements ReplayState<T> {
-    private final NotificationLite<T> nl = NotificationLite.instance();
     /** The buffer. */
     private final ArrayList<Object> list;
 
@@ -360,12 +358,12 @@ public class ReplayRelay<T> extends Relay<T, T> {
     }
 
     @Override public void next(T n) {
-      list.add(nl.next(n));
+      list.add(NotificationLite.next(n));
       getAndIncrement(); // release index
     }
 
     private void accept(Observer<? super T> o, int idx) {
-      nl.accept(o, list.get(idx));
+      NotificationLite.accept(o, list.get(idx));
     }
 
     @Override public boolean replayObserver(RelayObserver<? super T> observer) {
@@ -400,7 +398,7 @@ public class ReplayRelay<T> extends Relay<T, T> {
       int idx = get(); // aquire
       if (idx > 0) {
         Object o = list.get(idx - 1);
-        if (nl.isCompleted(o) || nl.isError(o)) {
+        if (NotificationLite.isCompleted(o) || NotificationLite.isError(o)) {
           return idx - 1; // do not report a terminal event as part of size
         }
       }
@@ -433,13 +431,13 @@ public class ReplayRelay<T> extends Relay<T, T> {
       int idx = get();
       if (idx > 0) {
         Object o = list.get(idx - 1);
-        if (nl.isCompleted(o) || nl.isError(o)) {
+        if (NotificationLite.isCompleted(o) || NotificationLite.isError(o)) {
           if (idx > 1) {
-            return nl.getValue(list.get(idx - 2));
+            return NotificationLite.getValue(list.get(idx - 2));
           }
           return null;
         }
-        return nl.getValue(o);
+        return NotificationLite.getValue(o);
       }
       return null;
     }
@@ -455,7 +453,6 @@ public class ReplayRelay<T> extends Relay<T, T> {
     final EvictionPolicy evictionPolicy;
     final Func1<Object, Object> enterTransform;
     final Func1<Object, Object> leaveTransform;
-    final NotificationLite<T> nl = NotificationLite.instance();
     volatile boolean terminated;
     volatile NodeList.Node<Object> tail;
 
@@ -470,14 +467,14 @@ public class ReplayRelay<T> extends Relay<T, T> {
 
     @Override public void next(T value) {
       if (!terminated) {
-        list.addLast(enterTransform.call(nl.next(value)));
+        list.addLast(enterTransform.call(NotificationLite.next(value)));
         evictionPolicy.evict(list);
         tail = list.tail;
       }
     }
 
     private void accept(Observer<? super T> o, NodeList.Node<Object> node) {
-      nl.accept(o, leaveTransform.call(node.value));
+      NotificationLite.accept(o, leaveTransform.call(node.value));
     }
 
     /**
@@ -490,7 +487,7 @@ public class ReplayRelay<T> extends Relay<T, T> {
     private void acceptTest(Observer<? super T> o, NodeList.Node<Object> node, long now) {
       Object v = node.value;
       if (!evictionPolicy.test(v, now)) {
-        nl.accept(o, leaveTransform.call(v));
+        NotificationLite.accept(o, leaveTransform.call(v));
       }
     }
 
@@ -545,7 +542,7 @@ public class ReplayRelay<T> extends Relay<T, T> {
       }
       if (l.value != null) {
         Object value = leaveTransform.call(l.value);
-        if (value != null && (nl.isError(value) || nl.isCompleted(value))) {
+        if (value != null && (NotificationLite.isError(value) || NotificationLite.isCompleted(value))) {
           return size - 1;
         }
       }
@@ -559,7 +556,7 @@ public class ReplayRelay<T> extends Relay<T, T> {
         return true;
       }
       Object value = leaveTransform.call(next.value);
-      return nl.isError(value) || nl.isCompleted(value);
+      return NotificationLite.isError(value) || NotificationLite.isCompleted(value);
     }
 
     @Override @SuppressWarnings("unchecked") public T[] toArray(T[] a) {
@@ -568,7 +565,7 @@ public class ReplayRelay<T> extends Relay<T, T> {
       while (next != null) {
         Object o = leaveTransform.call(next.value);
 
-        if (next.next == null && (nl.isError(o) || nl.isCompleted(o))) {
+        if (next.next == null && (NotificationLite.isError(o) || NotificationLite.isCompleted(o))) {
           break;
         } else {
           list.add((T) o);
@@ -589,14 +586,14 @@ public class ReplayRelay<T> extends Relay<T, T> {
         h = h.next;
       }
       Object value = leaveTransform.call(h.value);
-      if (nl.isError(value) || nl.isCompleted(value)) {
+      if (NotificationLite.isError(value) || NotificationLite.isCompleted(value)) {
         if (p != null) {
           value = leaveTransform.call(p.value);
-          return nl.getValue(value);
+          return NotificationLite.getValue(value);
         }
         return null;
       }
-      return nl.getValue(value);
+      return NotificationLite.getValue(value);
     }
   }
 

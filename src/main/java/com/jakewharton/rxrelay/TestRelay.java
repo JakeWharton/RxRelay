@@ -36,7 +36,7 @@ public final class TestRelay<T> extends Relay<T, T> {
 
     state.onAdded = new Action1<RelayObserver<T>>() {
       @Override public void call(RelayObserver<T> o) {
-        o.emitFirst(state.getLatest(), state.nl);
+        o.emitFirst(state.getLatest());
       }
     };
 
