@@ -16,8 +16,6 @@
 package com.jakewharton.rxrelay;
 
 import java.io.Serializable;
-
-import rx.Notification.Kind;
 import rx.Observer;
 
 /**
@@ -25,28 +23,11 @@ import rx.Observer;
  * implementation of the operator but don't want to incur the allocation cost of actually creating
  * {@link rx.Notification} objects for every {@link Observer#onNext onNext} and
  * {@link Observer#onCompleted onCompleted}.
- * <p>
- * An object is allocated inside {@link #error(Throwable)} to wrap the {@link Throwable} but this shouldn't
- * affect performance because exceptions should be exceptionally rare.
- * <p>
- * It's implemented as a singleton to maintain some semblance of type safety that is completely non-existent.
- *
- * @param <T> the element type
  */
-final class NotificationLite<T> {
+final class NotificationLite {
 
     private NotificationLite() {
-        // singleton
     }
-
-    private static final Object ON_COMPLETED_SENTINEL = new Serializable() {
-        private static final long serialVersionUID = 1;
-
-        @Override
-        public String toString() {
-            return "Notification=>Completed";
-        }
-    };
 
     private static final Object ON_NEXT_NULL_SENTINEL = new Serializable() {
         private static final long serialVersionUID = 2;
@@ -56,20 +37,6 @@ final class NotificationLite<T> {
             return "Notification=>NULL";
         }
     };
-
-    static final class OnErrorSentinel implements Serializable {
-        private static final long serialVersionUID = 3;
-        final Throwable e;
-
-        public OnErrorSentinel(Throwable e) {
-            this.e = e;
-        }
-
-        @Override
-        public String toString() {
-            return "Notification=>Error:" + e;
-        }
-    }
 
     /**
      * Creates a lite {@code onNext} notification for the value passed in without doing any allocation. Can
@@ -89,29 +56,6 @@ final class NotificationLite<T> {
     }
 
     /**
-     * Creates a lite {@code onCompleted} notification without doing any allocation. Can be unwrapped and
-     * sent with the {@link #accept} method.
-     *
-     * @return a completion token
-     */
-    public static Object completed() {
-        return ON_COMPLETED_SENTINEL;
-    }
-
-    /**
-     * Create a lite {@code onError} notification. This call creates an object to wrap the {@link Throwable},
-     * but since there should only be one of these, the performance impact should be small. Can be unwrapped and
-     * sent with the {@link #accept} method.
-     *
-     * @param e
-     *           the {@code Throwable} in the {@code onError} notification
-     * @return an object encapsulating the exception
-     */
-    public static Object error(Throwable e) {
-        return new OnErrorSentinel(e);
-    }
-
-    /**
      * Unwraps the lite notification and calls the appropriate method on the {@link Observer}.
      *
      * @param <T> the value type to accept
@@ -127,44 +71,15 @@ final class NotificationLite<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T> boolean accept(Observer<? super T> o, Object n) {
-        if (n == ON_COMPLETED_SENTINEL) {
-            o.onCompleted();
-            return true;
-        } else if (n == ON_NEXT_NULL_SENTINEL) {
+        if (n == ON_NEXT_NULL_SENTINEL) {
             o.onNext(null);
             return false;
         } else if (n != null) {
-            if (n.getClass() == OnErrorSentinel.class) {
-                o.onError(((OnErrorSentinel) n).e);
-                return true;
-            }
             o.onNext((T) n);
             return false;
         } else {
             throw new IllegalArgumentException("The lite notification can not be null");
         }
-    }
-
-    /**
-     * Indicates whether or not the lite notification represents an {@code onCompleted} event.
-     *
-     * @param n
-     *            the lite notification
-     * @return {@code true} if {@code n} represents an {@code onCompleted} event; {@code false} otherwise
-     */
-    public static boolean isCompleted(Object n) {
-        return n == ON_COMPLETED_SENTINEL;
-    }
-
-    /**
-     * Indicates whether or not the lite notification represents an {@code onError} event.
-     *
-     * @param n
-     *            the lite notification
-     * @return {@code true} if {@code n} represents an {@code onError} event; {@code false} otherwise
-     */
-    public static boolean isError(Object n) {
-        return n instanceof OnErrorSentinel;
     }
 
     /**
@@ -174,40 +89,6 @@ final class NotificationLite<T> {
      */
     public static boolean isNull(Object n) {
         return n == ON_NEXT_NULL_SENTINEL;
-    }
-
-    /**
-     * Indicates whether or not the lite notification represents an {@code onNext} event.
-     * @param n the lite notification
-     * @return {@code true} if {@code n} represents an {@code onNext} event, {@code false} otherwise
-     */
-    public static boolean isNext(Object n) {
-        return n != null && !isError(n) && !isCompleted(n);
-    }
-
-    /**
-     * Indicates which variety a particular lite notification is. If you need something more complex than
-     * simply calling the right method on an {@link Observer} then you can use this method to get the
-     * {@link rx.Notification.Kind}.
-     *
-     * @param n
-     *            the lite notification
-     * @throws IllegalArgumentException
-     *             if the notification is null.
-     * @return the {@link Kind} of lite notification {@code n} is: either {@code Kind.OnCompleted},
-     *         {@code Kind.OnError}, or {@code Kind.OnNext}
-     */
-    public static Kind kind(Object n) {
-        if (n == null) {
-            throw new IllegalArgumentException("The lite notification can not be null");
-        } else if (n == ON_COMPLETED_SENTINEL) {
-            return Kind.OnCompleted;
-        } else if (n instanceof OnErrorSentinel) {
-            return Kind.OnError;
-        } else {
-            // value or ON_NEXT_NULL_SENTINEL but either way it's an OnNext
-            return Kind.OnNext;
-        }
     }
 
     /**
@@ -223,18 +104,5 @@ final class NotificationLite<T> {
     @SuppressWarnings("unchecked")
     public static <T> T getValue(Object n) {
         return n == ON_NEXT_NULL_SENTINEL ? null : (T) n;
-    }
-
-    /**
-     * Returns the {@link Throwable} corresponding to this {@code OnError} lite notification. Bad things happen
-     * if you pass this an {@code OnComplete} or {@code OnNext} notification type. For performance reasons, this
-     * method does not check for this, so you are expected to prevent such a mishap.
-     *
-     * @param n
-     *            the lite notification (of type {@code Kind.OnError})
-     * @return the {@link Throwable} wrapped inside {@code n}
-     */
-    public static Throwable getError(Object n) {
-        return ((OnErrorSentinel) n).e;
     }
 }
