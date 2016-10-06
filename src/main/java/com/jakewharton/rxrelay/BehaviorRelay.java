@@ -116,8 +116,7 @@ public class BehaviorRelay<T> extends Relay<T, T> {
    * @return true if and only if the relay has some value.
    */
   @Beta public boolean hasValue() {
-    Object o = state.getLatest();
-    return NotificationLite.isNext(o);
+    return state.getLatest() != null;
   }
 
   /**
@@ -130,7 +129,7 @@ public class BehaviorRelay<T> extends Relay<T, T> {
    */
   @Beta public T getValue() {
     Object o = state.getLatest();
-    if (NotificationLite.isNext(o)) {
+    if (o != null) {
       return NotificationLite.getValue(o);
     }
     return null;
@@ -146,7 +145,7 @@ public class BehaviorRelay<T> extends Relay<T, T> {
    */
   @Beta @SuppressWarnings("unchecked") public T[] getValues(T[] a) {
     Object o = state.getLatest();
-    if (NotificationLite.isNext(o)) {
+    if (o != null) {
       if (a.length == 0) {
         a = (T[]) Array.newInstance(a.getClass().getComponentType(), 1);
       }

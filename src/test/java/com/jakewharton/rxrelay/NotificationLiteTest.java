@@ -15,37 +15,24 @@
  */
 package com.jakewharton.rxrelay;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 
 public class NotificationLiteTest {
 
     @Test
-    public void testComplete() {
-        Object n = NotificationLite.next("Hello");
-        Object c = NotificationLite.completed();
-
-        assertTrue(NotificationLite.isCompleted(c));
-        assertFalse(NotificationLite.isCompleted(n));
-
-        assertEquals("Hello", NotificationLite.getValue(n));
+    public void value() {
+        String value = "Hello";
+        Object n = NotificationLite.next(value);
+        assertSame(value, NotificationLite.getValue(n));
     }
 
     @Test
-    public void testValueKind() {
-
-        assertTrue(NotificationLite.isNull(NotificationLite.next(null)));
-        assertFalse(NotificationLite.isNull(NotificationLite.next(1)));
-        assertFalse(NotificationLite.isNull(NotificationLite.error(new RuntimeException())));
-        assertFalse(NotificationLite.isNull(NotificationLite.completed()));
-        assertFalse(NotificationLite.isNull(null));
-
-        assertTrue(NotificationLite.isNext(NotificationLite.next(null)));
-        assertTrue(NotificationLite.isNext(NotificationLite.next(1)));
-        assertFalse(NotificationLite.isNext(NotificationLite.completed()));
-        assertFalse(NotificationLite.isNext(null));
-        assertFalse(NotificationLite.isNext(NotificationLite.error(new RuntimeException())));
+    public void nullValue() {
+        Object n = NotificationLite.next(null);
+        assertNull(NotificationLite.getValue(n));
     }
 }
