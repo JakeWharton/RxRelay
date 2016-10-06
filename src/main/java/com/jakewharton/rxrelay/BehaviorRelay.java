@@ -20,7 +20,6 @@ import java.lang.reflect.Array;
 import rx.Observer;
 import rx.annotations.Beta;
 import rx.functions.Action1;
-import rx.internal.operators.NotificationLite;
 
 /**
  * Relay that emits the most recent item it has observed and all subsequent observed items to each
@@ -74,18 +73,17 @@ public class BehaviorRelay<T> extends Relay<T, T> {
   private static <T> BehaviorRelay<T> create(T defaultValue, boolean hasDefault) {
     final RelaySubscriptionManager<T> state = new RelaySubscriptionManager<T>();
     if (hasDefault) {
-      state.setLatest(NotificationLite.instance().next(defaultValue));
+      state.setLatest(NotificationLite.next(defaultValue));
     }
     state.onAdded = new Action1<RelayObserver<T>>() {
       @Override public void call(RelayObserver<T> o) {
-        o.emitFirst(state.getLatest(), state.nl);
+        o.emitFirst(state.getLatest());
       }
     };
     return new BehaviorRelay<T>(state, state);
   }
 
   private final RelaySubscriptionManager<T> state;
-  private final NotificationLite<T> nl = NotificationLite.instance();
 
   protected BehaviorRelay(OnSubscribe<T> onSubscribe, RelaySubscriptionManager<T> state) {
     super(onSubscribe);
@@ -95,9 +93,9 @@ public class BehaviorRelay<T> extends Relay<T, T> {
   @Override public void call(T v) {
     Object last = state.getLatest();
     if (last == null || state.active) {
-      Object n = nl.next(v);
+      Object n = NotificationLite.next(v);
       for (RelayObserver<T> ro : state.next(n)) {
-        ro.emitNext(n, state.nl);
+        ro.emitNext(n);
       }
     }
   }
@@ -119,7 +117,7 @@ public class BehaviorRelay<T> extends Relay<T, T> {
    */
   @Beta public boolean hasValue() {
     Object o = state.getLatest();
-    return nl.isNext(o);
+    return NotificationLite.isNext(o);
   }
 
   /**
@@ -132,8 +130,8 @@ public class BehaviorRelay<T> extends Relay<T, T> {
    */
   @Beta public T getValue() {
     Object o = state.getLatest();
-    if (nl.isNext(o)) {
-      return nl.getValue(o);
+    if (NotificationLite.isNext(o)) {
+      return NotificationLite.getValue(o);
     }
     return null;
   }
@@ -148,11 +146,11 @@ public class BehaviorRelay<T> extends Relay<T, T> {
    */
   @Beta @SuppressWarnings("unchecked") public T[] getValues(T[] a) {
     Object o = state.getLatest();
-    if (nl.isNext(o)) {
+    if (NotificationLite.isNext(o)) {
       if (a.length == 0) {
         a = (T[]) Array.newInstance(a.getClass().getComponentType(), 1);
       }
-      a[0] = nl.getValue(o);
+      a[0] = NotificationLite.getValue(o);
       if (a.length > 1) {
         a[1] = null;
       }
