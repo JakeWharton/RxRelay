@@ -42,12 +42,11 @@ public final class PublishRelayTest {
 
     relay.call("one");
     relay.call("two");
-    relay.call("three");
 
     @SuppressWarnings("unchecked") Observer<String> anotherObserver = mock(Observer.class);
     relay.subscribe(anotherObserver);
 
-    relay.call("four");
+    relay.call("three");
 
     assertCompletedObserver(observer);
     // todo bug?            assertNeverObserver(anotherObserver);
@@ -110,6 +109,7 @@ public final class PublishRelayTest {
     assertCompletedStartingWithThreeObserver(anotherObserver);
   }
 
+  @SuppressWarnings("Duplicates")
   private void assertObservedUntilTwo(Observer<String> observer) {
     verify(observer, times(1)).onNext("one");
     verify(observer, times(1)).onNext("two");
@@ -152,10 +152,6 @@ public final class PublishRelayTest {
     for (int i = 0; i < 10; i++) {
       s.call(i);
     }
-
-    //            System.out.println("countParent: " + countParent.get());
-    //            System.out.println("countChildren: " + countChildren.get());
-    //            System.out.println("countTotal: " + countTotal.get());
 
     // 9+8+7+6+5+4+3+2+1+0 == 45
     assertEquals(45, list.size());
