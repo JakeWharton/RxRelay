@@ -50,7 +50,7 @@ public final class PublishRelayTest {
     relay.call("four");
 
     assertCompletedObserver(observer);
-    // todo bug?            assertNeverObserver(anotherObserver);
+    assertNeverObserver(anotherObserver);
   }
 
   private void assertCompletedObserver(Observer<String> observer) {
@@ -60,7 +60,13 @@ public final class PublishRelayTest {
     verify(observer, never()).onError(any(Throwable.class));
     verify(observer, never()).onCompleted();
   }
-
+  private void assertNeverObserver(Observer<String> observer) {
+    verify(observer, never()).onNext("one");
+    verify(observer, never()).onNext("two");
+    verify(observer, never()).onNext("three");
+    verify(observer, never()).onError(any(Throwable.class));
+    verify(observer, never()).onCompleted();
+    }
   @Test public void testSubscribeMidSequence() {
     PublishRelay<String> relay = PublishRelay.create();
 
