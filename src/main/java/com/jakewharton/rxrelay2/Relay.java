@@ -17,7 +17,7 @@ import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
 /**
- * Represents an Consumer and an Observable at the same time, allowing
+ * Represents a Consumer and an Observable at the same time, allowing
  * multicasting events from a single source to multiple child Observers.
  * <p>All methods except {@link #accept} are thread-safe.
  * Use {@link #toSerialized()} to make it thread-safe as well.
@@ -25,20 +25,18 @@ import io.reactivex.functions.Consumer;
  * @param <T> the item value type
  */
 public abstract class Relay<T> extends Observable<T> implements Consumer<T> {
-    // Redeclare without the checked exception.
-    @Override public abstract void accept(T value);
+    /** {@inheritDoc} */
+    @Override public abstract void accept(T value); // Redeclare without checked exception.
 
     /**
      * Returns true if the subject has any Observers.
      * <p>The method is thread-safe.
-     * @return true if the subject has any Observers
      */
     public abstract boolean hasObservers();
 
     /**
-     * Wraps this Subject and serializes the calls to {@link #accept}, making it thread-safe.
+     * Wraps this Relay and serializes the calls to {@link #accept}, making it thread-safe.
      * <p>The method is thread-safe.
-     * @return the wrapped and serialized relay
      */
     public final Relay<T> toSerialized() {
         if (this instanceof SerializedRelay) {

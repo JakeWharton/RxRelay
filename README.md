@@ -1,7 +1,7 @@
 RxRelay
 =======
 
-Relays are [RxJava][rx] types which are both an `Observable` and an `Action1`.
+Relays are [RxJava][rx] types which are both an `Observable` and a `Consumer`.
 
 Basically: A `Subject` except without the ability to call `onComplete` or `onError`.
 
@@ -29,18 +29,18 @@ Usage
     // observer will receive all events.
     BehaviorRelay<Object> relay = BehaviorRelay.create("default");
     relay.subscribe(observer);
-    relay.call("one");
-    relay.call("two");
-    relay.call("three");
+    relay.accept("one");
+    relay.accept("two");
+    relay.accept("three");
     ```
     ```java
     // observer will receive the "one", "two" and "three" events, but not "zero"
     BehaviorRelay<Object> relay = BehaviorRelay.create("default");
-    relay.call("zero");
-    relay.call("one");
+    relay.accept("zero");
+    relay.accept("one");
     relay.subscribe(observer);
-    relay.call("two");
-    relay.call("three");
+    relay.accept("two");
+    relay.accept("three");
     ```
 
  *  **`PublishRelay`**
@@ -52,11 +52,11 @@ Usage
     PublishRelay<Object> relay = PublishRelay.create();
     // observer1 will receive all events
     relay.subscribe(observer1);
-    relay.call("one");
-    relay.call("two");
+    relay.accept("one");
+    relay.accept("two");
     // observer2 will only receive "three"
     relay.subscribe(observer2);
-    relay.call("three");
+    relay.accept("three");
     ```
 
  *  **`ReplayRelay`**
@@ -65,24 +65,15 @@ Usage
 
     ```java
     ReplayRelay<Object> relay = ReplayRelay.create();
-    relay.call("one");
-    relay.call("two");
-    relay.call("three");
+    relay.accept("one");
+    relay.accept("two");
+    relay.accept("three");
     // both of the following will get the events from above
     relay.subscribe(observer1);
     relay.subscribe(observer2);
     ```
 
- *  **`SerializedRelay`**
-
-    Wraps a `Relay` so that it is safe to call `call()` from different threads.
-
-    ```java
-    safeRelay = unsafeRelay.toSerialized();
-    ```
-
-All relays use the `Relay` base class which also allows custom implementations. There is also
-`TestRelay` for operating on a `TestScheduler`.
+All relays use the `Relay` base class which also allows custom implementations.
 
 See [the Javadoc][docs] for more information.
 
@@ -96,14 +87,14 @@ Download
 Maven:
 ```xml
 <dependency>
-  <groupId>com.jakewharton.rxrelay</groupId>
+  <groupId>com.jakewharton.rxrelay2</groupId>
   <artifactId>rxrelay</artifactId>
-  <version>1.2.0</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 Gradle:
 ```groovy
-compile 'com.jakewharton.rxrelay:rxrelay:1.2.0'
+compile 'com.jakewharton.rxrelay2:rxrelay:2.0.0'
 ```
 
 Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].

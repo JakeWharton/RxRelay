@@ -23,7 +23,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Subject that emits the most recent item it has observed and all subsequent observed items to each subscribed
+ * Relay that emits the most recent item it has observed and all subsequent observed items to each subscribed
  * {@link Observer}.
  * <p>
  * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.BehaviorSubject.png" alt="">
@@ -33,37 +33,20 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * <pre> {@code
 
   // observer will receive all events.
-  BehaviorSubject<Object> subject = BehaviorSubject.create("default");
+  BehaviorRelay<Object> subject = BehaviorRelay.create("default");
   subject.subscribe(observer);
-  subject.onNext("one");
-  subject.onNext("two");
-  subject.onNext("three");
+  subject.accept("one");
+  subject.accept("two");
+  subject.accept("three");
 
   // observer will receive the "one", "two" and "three" events, but not "zero"
-  BehaviorSubject<Object> subject = BehaviorSubject.create("default");
-  subject.onNext("zero");
-  subject.onNext("one");
+  BehaviorRelay<Object> subject = BehaviorRelay.create("default");
+  subject.accept("zero");
+  subject.accept("one");
   subject.subscribe(observer);
-  subject.onNext("two");
-  subject.onNext("three");
-
-  // observer will receive only onComplete
-  BehaviorSubject<Object> subject = BehaviorSubject.create("default");
-  subject.onNext("zero");
-  subject.onNext("one");
-  subject.onComplete();
-  subject.subscribe(observer);
-
-  // observer will receive only onError
-  BehaviorSubject<Object> subject = BehaviorSubject.create("default");
-  subject.onNext("zero");
-  subject.onNext("one");
-  subject.onError(new RuntimeException("error"));
-  subject.subscribe(observer);
+  subject.accept("two");
+  subject.accept("three");
   } </pre>
- *
- * @param <T>
- *          the type of item expected to be observed by the Subject
  */
 public final class BehaviorRelay<T> extends Relay<T> {
 
@@ -84,10 +67,6 @@ public final class BehaviorRelay<T> extends Relay<T> {
 
     /**
      * Creates a {@link BehaviorRelay} without a default item.
-     *
-     * @param <T>
-     *            the type of item the Subject will emit
-     * @return the constructed {@link BehaviorRelay}
      */
     public static <T> BehaviorRelay<T> create() {
         return new BehaviorRelay<T>();
@@ -97,20 +76,16 @@ public final class BehaviorRelay<T> extends Relay<T> {
      * Creates a {@link BehaviorRelay} that emits the last item it observed and all subsequent items to each
      * {@link Observer} that subscribes to it.
      *
-     * @param <T>
-     *            the type of item the Subject will emit
      * @param defaultValue
      *            the item that will be emitted first to any {@link Observer} as long as the
      *            {@link BehaviorRelay} has not yet observed any items from its source {@code Observable}
-     * @return the constructed {@link BehaviorRelay}
      */
     public static <T> BehaviorRelay<T> createDefault(T defaultValue) {
         return new BehaviorRelay<T>(defaultValue);
     }
 
     /**
-     * Constructs an empty BehaviorSubject.
-     * @since 2.0
+     * Constructs an empty BehaviorRelay.
      */
     @SuppressWarnings("unchecked") private BehaviorRelay() {
         ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -121,10 +96,9 @@ public final class BehaviorRelay<T> extends Relay<T> {
     }
 
     /**
-     * Constructs a BehaviorSubject with the given initial value.
+     * Constructs a BehaviorRelay with the given initial value.
      * @param defaultValue the initial value, not null (verified)
      * @throws NullPointerException if {@code defaultValue} is null
-     * @since 2.0
      */
     private BehaviorRelay(T defaultValue) {
         this();
@@ -164,18 +138,16 @@ public final class BehaviorRelay<T> extends Relay<T> {
     }
 
     /**
-     * Returns a single value the Subject currently has or null if no such value exists.
+     * Returns a single value the Relay currently has or null if no such value exists.
      * <p>The method is thread-safe.
-     * @return a single value the Subject currently has or null if no such value exists
      */
     public T getValue() {
         return value.get();
     }
 
     /**
-     * Returns an Object array containing snapshot all values of the Subject.
+     * Returns an Object array containing snapshot all values of the Relay.
      * <p>The method is thread-safe.
-     * @return the array containing the snapshot of all values of the Subject
      */
     public Object[] getValues() {
         @SuppressWarnings("unchecked")
@@ -189,12 +161,11 @@ public final class BehaviorRelay<T> extends Relay<T> {
     }
 
     /**
-     * Returns a typed array containing a snapshot of all values of the Subject.
+     * Returns a typed array containing a snapshot of all values of the Relay.
      * <p>The method follows the conventions of Collection.toArray by setting the array element
      * after the last value to null (if the capacity permits).
      * <p>The method is thread-safe.
      * @param array the target array to copy values into if it fits
-     * @return the given array if the values fit into it or a new array containing all values
      */
     @SuppressWarnings("unchecked")
     public T[] getValues(T[] array) {

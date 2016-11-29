@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Subject that, once an {@link Observer} has subscribed, emits all subsequently observed items to the
+ * Relay that, once an {@link Observer} has subscribed, emits all subsequently observed items to the
  * subscriber.
  * <p>
  * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.PublishSubject.png" alt="">
@@ -28,20 +28,16 @@ import java.util.concurrent.atomic.AtomicReference;
  * <p>
  * <pre> {@code
 
-  PublishSubject<Object> subject = PublishSubject.create();
-  // observer1 will receive all onNext and onComplete events
-  subject.subscribe(observer1);
-  subject.onNext("one");
-  subject.onNext("two");
-  // observer2 will only receive "three" and onComplete
-  subject.subscribe(observer2);
-  subject.onNext("three");
-  subject.onComplete();
+  PublishRelay<Object> relay = PublishRelay.create();
+  // observer1 will receive all events
+  relay.subscribe(observer1);
+  relay.accept("one");
+  relay.accept("two");
+  // observer2 will only receive "three"
+  relay.subscribe(observer2);
+  relay.accept("three");
 
   } </pre>
- *
- * @param <T>
- *          the type of items observed and emitted by the Subject
  */
 public final class PublishRelay<T> extends Relay<T> {
     /** An empty subscribers array to avoid allocating it all the time. */
@@ -52,17 +48,14 @@ public final class PublishRelay<T> extends Relay<T> {
     private final AtomicReference<PublishDisposable<T>[]> subscribers;
 
     /**
-     * Constructs a PublishSubject.
-     * @param <T> the value type
-     * @return the new PublishSubject
+     * Constructs a PublishRelay.
      */
     public static <T> PublishRelay<T> create() {
         return new PublishRelay<T>();
     }
 
     /**
-     * Constructs a PublishSubject.
-     * @since 2.0
+     * Constructs a PublishRelay.
      */
     @SuppressWarnings("unchecked") private PublishRelay() {
         subscribers = new AtomicReference<PublishDisposable<T>[]>(EMPTY);

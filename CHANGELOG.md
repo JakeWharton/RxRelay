@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+Version 2.0.0 *(2016-11-29)*
+----------------------------
+
+This version only supports RxJava 2.
+
+ * New: Maven coordinates are now `com.jakewharton.rxrelay2:rxrelay`. Package name is now
+   `com.jakewharton.rxrelay2.*`.
+
+
 Version 1.2.0 *(2016-10-06)*
 ----------------------------
 

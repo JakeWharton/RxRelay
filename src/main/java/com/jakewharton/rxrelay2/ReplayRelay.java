@@ -32,15 +32,14 @@ import java.util.concurrent.atomic.AtomicReference;
  * <p>
  * <pre> {@code
 
-  ReplaySubject<Object> subject = new ReplaySubject<>();
-  subject.onNext("one");
-  subject.onNext("two");
-  subject.onNext("three");
-  subject.onComplete();
+  ReplayRelay<Object> relay = new ReplayRelay<>();
+  relay.accept("one");
+  relay.accept("two");
+  relay.accept("three");
 
-  // both of the following will get the onNext/onComplete calls from above
-  subject.subscribe(observer1);
-  subject.subscribe(observer2);
+  // both of the following will get the values from above
+  relay.subscribe(observer1);
+  relay.subscribe(observer2);
 
   } </pre>
  *
@@ -55,86 +54,72 @@ public final class ReplayRelay<T> extends Relay<T> {
     static final ReplayDisposable[] EMPTY = new ReplayDisposable[0];
 
     /**
-     * Creates an unbounded replay subject.
+     * Creates an unbounded replay relay.
      * <p>
      * The internal buffer is backed by an {@link ArrayList} and starts with an initial capacity of 16. Once the
      * number of items reaches this capacity, it will grow as necessary (usually by 50%). However, as the
      * number of items grows, this causes frequent array reallocation and copying, and may hurt performance
      * and latency. This can be avoided with the {@link #create(int)} overload which takes an initial capacity
      * parameter and can be tuned to reduce the array reallocation frequency as needed.
-     *
-     * @param <T>
-     *          the type of items observed and emitted by the Subject
-     * @return the created subject
      */
     public static <T> ReplayRelay<T> create() {
         return new ReplayRelay<T>(new UnboundedReplayBuffer<T>(16));
     }
 
     /**
-     * Creates an unbounded replay subject with the specified initial buffer capacity.
+     * Creates an unbounded replay relay with the specified initial buffer capacity.
      * <p>
      * Use this method to avoid excessive array reallocation while the internal buffer grows to accommodate new
      * items. For example, if you know that the buffer will hold 32k items, you can ask the
-     * {@code ReplaySubject} to preallocate its internal array with a capacity to hold that many items. Once
+     * {@code ReplayRelay} to preallocate its internal array with a capacity to hold that many items. Once
      * the items start to arrive, the internal array won't need to grow, creating less garbage and no overhead
      * due to frequent array-copying.
      *
-     * @param <T>
-     *          the type of items observed and emitted by the Subject
      * @param capacityHint
      *          the initial buffer capacity
-     * @return the created subject
      */
     public static <T> ReplayRelay<T> create(int capacityHint) {
         return new ReplayRelay<T>(new UnboundedReplayBuffer<T>(capacityHint));
     }
 
     /**
-     * Creates a size-bounded replay subject.
+     * Creates a size-bounded replay relay.
      * <p>
-     * In this setting, the {@code ReplaySubject} holds at most {@code size} items in its internal buffer and
+     * In this setting, the {@code ReplayRelay} holds at most {@code size} items in its internal buffer and
      * discards the oldest item.
      * <p>
-     * When observers subscribe to a terminated {@code ReplaySubject}, they are guaranteed to see at most
+     * When observers subscribe to a terminated {@code ReplayRelay}, they are guaranteed to see at most
      * {@code size} {@code onNext} events followed by a termination event.
      * <p>
-     * If an observer subscribes while the {@code ReplaySubject} is active, it will observe all items in the
+     * If an observer subscribes while the {@code ReplayRelay} is active, it will observe all items in the
      * buffer at that point in time and each item observed afterwards, even if the buffer evicts items due to
      * the size constraint in the mean time. In other words, once an Observer subscribes, it will receive items
      * without gaps in the sequence.
      *
-     * @param <T>
-     *          the type of items observed and emitted by the Subject
      * @param maxSize
      *          the maximum number of buffered items
-     * @return the created subject
      */
     public static <T> ReplayRelay<T> createWithSize(int maxSize) {
         return new ReplayRelay<T>(new SizeBoundReplayBuffer<T>(maxSize));
     }
 
     /**
-     * Creates an unbounded replay subject with the bounded-implementation for testing purposes.
+     * Creates an unbounded replay replay with the bounded-implementation for testing purposes.
      * <p>
-     * This variant behaves like the regular unbounded {@code ReplaySubject} created via {@link #create()} but
+     * This variant behaves like the regular unbounded {@code ReplayRelay} created via {@link #create()} but
      * uses the structures of the bounded-implementation. This is by no means intended for the replacement of
-     * the original, array-backed and unbounded {@code ReplaySubject} due to the additional overhead of the
+     * the original, array-backed and unbounded {@code ReplayRelay} due to the additional overhead of the
      * linked-list based internal buffer. The sole purpose is to allow testing and reasoning about the behavior
      * of the bounded implementations without the interference of the eviction policies.
-     *
-     * @param <T>
-     *          the type of items observed and emitted by the Subject
-     * @return the created subject
      */
     /* test */ static <T> ReplayRelay<T> createUnbounded() {
         return new ReplayRelay<T>(new SizeBoundReplayBuffer<T>(Integer.MAX_VALUE));
     }
 
     /**
-     * Creates a time-bounded replay subject.
+     * Creates a time-bounded replay relay.
      * <p>
-     * In this setting, the {@code ReplaySubject} internally tags each observed item with a timestamp value
+     * In this setting, the {@code ReplayRelay} internally tags each observed item with a timestamp value
      * supplied by the {@link Scheduler} and keeps only those whose age is less than the supplied time value
      * converted to milliseconds. For example, an item arrives at T=0 and the max age is set to 5; at T&gt;=5
      * this first item is then evicted by any subsequent item or termination event, leaving the buffer empty.
@@ -142,7 +127,7 @@ public final class ReplayRelay<T> extends Relay<T> {
      * Once the subject is terminated, observers subscribing to it will receive items that remained in the
      * buffer after the terminal event, regardless of their age.
      * <p>
-     * If an observer subscribes while the {@code ReplaySubject} is active, it will observe only those items
+     * If an observer subscribes while the {@code ReplayRelay} is active, it will observe only those items
      * from within the buffer that have an age less than the specified time, and each item observed thereafter,
      * even if the buffer evicts items due to the time constraint in the mean time. In other words, once an
      * observer subscribes, it observes items without gaps in the sequence except for any outdated items at the
@@ -150,18 +135,15 @@ public final class ReplayRelay<T> extends Relay<T> {
      * <p>
      * Note that terminal notifications ({@code onError} and {@code onComplete}) trigger eviction as well. For
      * example, with a max age of 5, the first item is observed at T=0, then an {@code onComplete} notification
-     * arrives at T=10. If an observer subscribes at T=11, it will find an empty {@code ReplaySubject} with just
+     * arrives at T=10. If an observer subscribes at T=11, it will find an empty {@code ReplayRelay} with just
      * an {@code onComplete} notification.
      *
-     * @param <T>
-     *          the type of items observed and emitted by the Subject
      * @param maxAge
      *          the maximum age of the contained items
      * @param unit
      *          the time unit of {@code time}
      * @param scheduler
      *          the {@link Scheduler} that provides the current time
-     * @return the created subject
      */
     public static <T> ReplayRelay<T> createWithTime(long maxAge, TimeUnit unit, Scheduler scheduler) {
         return new ReplayRelay<T>(new SizeAndTimeBoundReplayBuffer<T>(Integer.MAX_VALUE, maxAge, unit, scheduler));
@@ -170,15 +152,15 @@ public final class ReplayRelay<T> extends Relay<T> {
     /**
      * Creates a time- and size-bounded replay subject.
      * <p>
-     * In this setting, the {@code ReplaySubject} internally tags each received item with a timestamp value
+     * In this setting, the {@code ReplayRelay} internally tags each received item with a timestamp value
      * supplied by the {@link Scheduler} and holds at most {@code size} items in its internal buffer. It evicts
      * items from the start of the buffer if their age becomes less-than or equal to the supplied age in
      * milliseconds or the buffer reaches its {@code size} limit.
      * <p>
-     * When observers subscribe to a terminated {@code ReplaySubject}, they observe the items that remained in
+     * When observers subscribe to a terminated {@code ReplayRelay}, they observe the items that remained in
      * the buffer after the terminal notification, regardless of their age, but at most {@code size} items.
      * <p>
-     * If an observer subscribes while the {@code ReplaySubject} is active, it will observe only those items
+     * If an observer subscribes while the {@code ReplayRelay} is active, it will observe only those items
      * from within the buffer that have age less than the specified time and each subsequent item, even if the
      * buffer evicts items due to the time constraint in the mean time. In other words, once an observer
      * subscribes, it observes items without gaps in the sequence except for the outdated items at the beginning
@@ -186,11 +168,9 @@ public final class ReplayRelay<T> extends Relay<T> {
      * <p>
      * Note that terminal notifications ({@code onError} and {@code onComplete}) trigger eviction as well. For
      * example, with a max age of 5, the first item is observed at T=0, then an {@code onComplete} notification
-     * arrives at T=10. If an observer subscribes at T=11, it will find an empty {@code ReplaySubject} with just
+     * arrives at T=10. If an observer subscribes at T=11, it will find an empty {@code ReplayRelay} with just
      * an {@code onComplete} notification.
      *
-     * @param <T>
-     *          the type of items observed and emitted by the Subject
      * @param maxAge
      *          the maximum age of the contained items
      * @param unit
@@ -199,14 +179,13 @@ public final class ReplayRelay<T> extends Relay<T> {
      *          the maximum number of buffered items
      * @param scheduler
      *          the {@link Scheduler} that provides the current time
-     * @return the created subject
      */
     public static <T> ReplayRelay<T> createWithTimeAndSize(long maxAge, TimeUnit unit, Scheduler scheduler, int maxSize) {
         return new ReplayRelay<T>(new SizeAndTimeBoundReplayBuffer<T>(maxSize, maxAge, unit, scheduler));
     }
 
     /**
-     * Constructs a ReplayProcessor with the given custom ReplayBuffer instance.
+     * Constructs a ReplayRelay with the given custom ReplayBuffer instance.
      * @param buffer the ReplayBuffer instance, not null (not verified)
      */
     @SuppressWarnings("unchecked") ReplayRelay(ReplayBuffer<T> buffer) {
@@ -252,9 +231,8 @@ public final class ReplayRelay<T> extends Relay<T> {
     }
 
     /**
-     * Returns a single value the Subject currently has or null if no such value exists.
+     * Returns a single value the Relay currently has or null if no such value exists.
      * <p>The method is thread-safe.
-     * @return a single value the Subject currently has or null if no such value exists
      */
     public T getValue() {
         return buffer.getValue();
@@ -264,9 +242,8 @@ public final class ReplayRelay<T> extends Relay<T> {
     private static final Object[] EMPTY_ARRAY = new Object[0];
 
     /**
-     * Returns an Object array containing snapshot all values of the Subject.
+     * Returns an Object array containing snapshot all values of the Relay.
      * <p>The method is thread-safe.
-     * @return the array containing the snapshot of all values of the Subject
      */
     public Object[] getValues() {
         @SuppressWarnings("unchecked")
@@ -280,21 +257,19 @@ public final class ReplayRelay<T> extends Relay<T> {
     }
 
     /**
-     * Returns a typed array containing a snapshot of all values of the Subject.
+     * Returns a typed array containing a snapshot of all values of the Relay.
      * <p>The method follows the conventions of Collection.toArray by setting the array element
      * after the last value to null (if the capacity permits).
      * <p>The method is thread-safe.
      * @param array the target array to copy values into if it fits
-     * @return the given array if the values fit into it or a new array containing all values
      */
     public T[] getValues(T[] array) {
         return buffer.getValues(array);
     }
 
     /**
-     * Returns true if the subject has any value.
+     * Returns true if the relay has any value.
      * <p>The method is thread-safe.
-     * @return true if the subject has any value
      */
     public boolean hasValue() {
         return buffer.size() != 0; // NOPMD
@@ -354,8 +329,6 @@ public final class ReplayRelay<T> extends Relay<T> {
     /**
      * Abstraction over a buffer that receives events and replays them to
      * individual Observers.
-     *
-     * @param <T> the value type
      */
     interface ReplayBuffer<T> {
 

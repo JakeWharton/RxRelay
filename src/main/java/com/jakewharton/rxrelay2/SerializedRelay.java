@@ -16,10 +16,8 @@ package com.jakewharton.rxrelay2;
 import io.reactivex.Observer;
 
 /**
- * Serializes calls to the Subscriber methods.
- * <p>All other Publisher and Subject methods are thread-safe by design.
- *
- * @param <T> the item value type
+ * Serializes calls to the Consumer methods.
+ * <p>All other Relay methods are thread-safe by design.
  */
 /* public */ final class SerializedRelay<T> extends Relay<T> {
     /** The actual subscriber to serialize Subscriber calls to. */
@@ -30,8 +28,7 @@ import io.reactivex.Observer;
     private AppendOnlyLinkedArrayList<T> queue;
 
     /**
-     * Constructor that wraps an actual subject.
-     * @param actual the subject wrapped
+     * Constructor that wraps an actual relay.
      */
     SerializedRelay(final Relay<T> actual) {
         this.actual = actual;
