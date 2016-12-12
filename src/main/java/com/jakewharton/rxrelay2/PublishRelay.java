@@ -75,8 +75,7 @@ public final class PublishRelay<T> extends Relay<T> {
     }
 
     /**
-     * Tries to add the given subscriber to the subscribers array atomically
-     * or returns false if the subject has terminated.
+     * Adds the given subscriber to the subscribers array atomically.
      * @param ps the subscriber to add
      */
     private void add(PublishDisposable<T> ps) {
