@@ -27,7 +27,7 @@ Usage
 
     ```java
     // observer will receive all events.
-    BehaviorRelay<Object> relay = BehaviorRelay.create("default");
+    BehaviorRelay<Object> relay = BehaviorRelay.createDefault("default");
     relay.subscribe(observer);
     relay.accept("one");
     relay.accept("two");
@@ -35,7 +35,7 @@ Usage
     ```
     ```java
     // observer will receive the "one", "two" and "three" events, but not "zero"
-    BehaviorRelay<Object> relay = BehaviorRelay.create("default");
+    BehaviorRelay<Object> relay = BehaviorRelay.createDefault("default");
     relay.accept("zero");
     relay.accept("one");
     relay.subscribe(observer);
