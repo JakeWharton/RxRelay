@@ -33,14 +33,14 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * <pre> {@code
 
   // observer will receive all events.
-  BehaviorRelay<Object> subject = BehaviorRelay.create("default");
+  BehaviorRelay<Object> subject = BehaviorRelay.createDefault("default");
   subject.subscribe(observer);
   subject.accept("one");
   subject.accept("two");
   subject.accept("three");
 
   // observer will receive the "one", "two" and "three" events, but not "zero"
-  BehaviorRelay<Object> subject = BehaviorRelay.create("default");
+  BehaviorRelay<Object> subject = BehaviorRelay.createDefault("default");
   subject.accept("zero");
   subject.accept("one");
   subject.subscribe(observer);
