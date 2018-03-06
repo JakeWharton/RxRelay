@@ -15,6 +15,7 @@ package com.jakewharton.rxrelay2;
 
 import io.reactivex.Observer;
 import io.reactivex.Scheduler;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -234,6 +235,7 @@ public final class ReplayRelay<T> extends Relay<T> {
      * Returns a single value the Relay currently has or null if no such value exists.
      * <p>The method is thread-safe.
      */
+    @Nullable
     public T getValue() {
         return buffer.getValue();
     }
@@ -338,6 +340,7 @@ public final class ReplayRelay<T> extends Relay<T> {
 
         int size();
 
+        @Nullable
         T getValue();
 
         T[] getValues(T[] array);
@@ -394,6 +397,7 @@ public final class ReplayRelay<T> extends Relay<T> {
         }
 
         @Override
+        @Nullable
         @SuppressWarnings("unchecked")
         public T getValue() {
             int s = size;
@@ -558,6 +562,7 @@ public final class ReplayRelay<T> extends Relay<T> {
         }
 
         @Override
+        @Nullable
         @SuppressWarnings("unchecked")
         public T getValue() {
             Node<T> h = head;
@@ -743,6 +748,7 @@ public final class ReplayRelay<T> extends Relay<T> {
         }
 
         @Override
+        @Nullable
         @SuppressWarnings("unchecked")
         public T getValue() {
             TimedNode<T> h = head;
