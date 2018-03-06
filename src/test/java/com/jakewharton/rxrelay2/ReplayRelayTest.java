@@ -362,6 +362,7 @@ public class ReplayRelayTest {
 
             Runnable r1 = new Runnable() {
                 @Override
+                @SuppressWarnings("CheckReturnValue")
                 public void run() {
                     rp.test();
                 }
@@ -372,6 +373,7 @@ public class ReplayRelayTest {
     }
 
     @Test
+    @SuppressWarnings("CheckReturnValue")
     public void cancelUpfront() {
         ReplayRelay<Integer> rp = ReplayRelay.create();
         rp.test();

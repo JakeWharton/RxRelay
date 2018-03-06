@@ -263,6 +263,7 @@ public class BehaviorRelayTest {
 
             Runnable r1 = new Runnable() {
                 @Override
+                @SuppressWarnings("CheckReturnValue")
                 public void run() {
                     p.test();
                 }

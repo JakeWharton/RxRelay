@@ -15,6 +15,7 @@ package com.jakewharton.rxrelay2;
 
 import com.jakewharton.rxrelay2.AppendOnlyLinkedArrayList.NonThrowingPredicate;
 import io.reactivex.Observer;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicReference;
@@ -141,6 +142,7 @@ public final class BehaviorRelay<T> extends Relay<T> {
      * Returns a single value the Relay currently has or null if no such value exists.
      * <p>The method is thread-safe.
      */
+    @Nullable
     public T getValue() {
         return value.get();
     }

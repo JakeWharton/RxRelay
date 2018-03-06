@@ -39,6 +39,7 @@ import static org.mockito.Mockito.verify;
 public class PublishRelayTest {
 
     @Test
+    @SuppressWarnings("CheckReturnValue")
     public void testNestedSubscribe() {
         final PublishRelay<Integer> s = PublishRelay.create();
 
@@ -271,6 +272,7 @@ public class PublishRelayTest {
     }
 
     @Test
+    @SuppressWarnings("CheckReturnValue")
     public void subscribedTo() {
         PublishRelay<Integer> pp = PublishRelay.create();
         PublishRelay<Integer> pp2 = PublishRelay.create();
