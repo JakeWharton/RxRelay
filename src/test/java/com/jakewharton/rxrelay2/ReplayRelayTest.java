@@ -194,9 +194,11 @@ public class ReplayRelayTest {
 
         for (int i = 0; i < 1000; i++) {
             rs.accept(i);
-            ts.advanceTimeBy(2, TimeUnit.SECONDS);
             assertEquals(1, rs.size());
             assertTrue(rs.hasValue());
+            ts.advanceTimeBy(2, TimeUnit.SECONDS);
+            assertEquals(0, rs.size());
+            assertFalse(rs.hasValue());
         }
     }
     @Test
