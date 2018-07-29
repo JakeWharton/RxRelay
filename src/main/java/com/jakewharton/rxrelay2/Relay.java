@@ -14,6 +14,7 @@
 package com.jakewharton.rxrelay2;
 
 import io.reactivex.Observable;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -38,6 +39,7 @@ public abstract class Relay<T> extends Observable<T> implements Consumer<T> {
      * Wraps this Relay and serializes the calls to {@link #accept}, making it thread-safe.
      * <p>The method is thread-safe.
      */
+    @NonNull
     public final Relay<T> toSerialized() {
         if (this instanceof SerializedRelay) {
             return this;

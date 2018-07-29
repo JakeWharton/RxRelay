@@ -15,6 +15,7 @@ package com.jakewharton.rxrelay2;
 
 import io.reactivex.Observer;
 import io.reactivex.Scheduler;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import java.lang.reflect.Array;
@@ -63,6 +64,7 @@ public final class ReplayRelay<T> extends Relay<T> {
      * and latency. This can be avoided with the {@link #create(int)} overload which takes an initial capacity
      * parameter and can be tuned to reduce the array reallocation frequency as needed.
      */
+    @NonNull
     public static <T> ReplayRelay<T> create() {
         return new ReplayRelay<T>(new UnboundedReplayBuffer<T>(16));
     }
@@ -79,6 +81,7 @@ public final class ReplayRelay<T> extends Relay<T> {
      * @param capacityHint
      *          the initial buffer capacity
      */
+    @NonNull
     public static <T> ReplayRelay<T> create(int capacityHint) {
         return new ReplayRelay<T>(new UnboundedReplayBuffer<T>(capacityHint));
     }
@@ -100,6 +103,7 @@ public final class ReplayRelay<T> extends Relay<T> {
      * @param maxSize
      *          the maximum number of buffered items
      */
+    @NonNull
     public static <T> ReplayRelay<T> createWithSize(int maxSize) {
         return new ReplayRelay<T>(new SizeBoundReplayBuffer<T>(maxSize));
     }
@@ -146,6 +150,7 @@ public final class ReplayRelay<T> extends Relay<T> {
      * @param scheduler
      *          the {@link Scheduler} that provides the current time
      */
+    @NonNull
     public static <T> ReplayRelay<T> createWithTime(long maxAge, TimeUnit unit, Scheduler scheduler) {
         return new ReplayRelay<T>(new SizeAndTimeBoundReplayBuffer<T>(Integer.MAX_VALUE, maxAge, unit, scheduler));
     }
@@ -181,6 +186,7 @@ public final class ReplayRelay<T> extends Relay<T> {
      * @param scheduler
      *          the {@link Scheduler} that provides the current time
      */
+    @NonNull
     public static <T> ReplayRelay<T> createWithTimeAndSize(long maxAge, TimeUnit unit, Scheduler scheduler, int maxSize) {
         return new ReplayRelay<T>(new SizeAndTimeBoundReplayBuffer<T>(maxSize, maxAge, unit, scheduler));
     }
@@ -247,6 +253,7 @@ public final class ReplayRelay<T> extends Relay<T> {
      * Returns an Object array containing snapshot all values of the Relay.
      * <p>The method is thread-safe.
      */
+    @NonNull
     public Object[] getValues() {
         @SuppressWarnings("unchecked")
         T[] a = (T[])EMPTY_ARRAY;

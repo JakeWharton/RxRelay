@@ -15,6 +15,7 @@ package com.jakewharton.rxrelay2;
 
 import com.jakewharton.rxrelay2.AppendOnlyLinkedArrayList.NonThrowingPredicate;
 import io.reactivex.Observer;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import java.lang.reflect.Array;
@@ -69,6 +70,7 @@ public final class BehaviorRelay<T> extends Relay<T> {
     /**
      * Creates a {@link BehaviorRelay} without a default item.
      */
+    @NonNull
     public static <T> BehaviorRelay<T> create() {
         return new BehaviorRelay<T>();
     }
@@ -81,6 +83,7 @@ public final class BehaviorRelay<T> extends Relay<T> {
      *            the item that will be emitted first to any {@link Observer} as long as the
      *            {@link BehaviorRelay} has not yet observed any items from its source {@code Observable}
      */
+    @NonNull
     public static <T> BehaviorRelay<T> createDefault(T defaultValue) {
         return new BehaviorRelay<T>(defaultValue);
     }
@@ -151,6 +154,7 @@ public final class BehaviorRelay<T> extends Relay<T> {
      * Returns an Object array containing snapshot all values of the Relay.
      * <p>The method is thread-safe.
      */
+    @NonNull
     public Object[] getValues() {
         @SuppressWarnings("unchecked")
         T[] a = (T[])EMPTY_ARRAY;
