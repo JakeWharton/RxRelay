@@ -89,12 +89,12 @@ Maven:
 <dependency>
   <groupId>com.jakewharton.rxrelay2</groupId>
   <artifactId>rxrelay</artifactId>
-  <version>2.0.0</version>
+  <version>2.1.0</version>
 </dependency>
 ```
 Gradle:
 ```groovy
-compile 'com.jakewharton.rxrelay2:rxrelay:2.0.0'
+compile 'com.jakewharton.rxrelay2:rxrelay:2.1.0'
 ```
 
 Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].

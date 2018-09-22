@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 2.1.0 *(2018-09-22)*
+----------------------------
+
+ * New: Minor updates to implementation to match RxJava 2.2.2.
+ * Fix: Add nullability annotations to all public methods and `@CheckReturnValue` where appropriate.
+
+
 Version 2.0.0 *(2016-11-29)*
 ----------------------------
 
