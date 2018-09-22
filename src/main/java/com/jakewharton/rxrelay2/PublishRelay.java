@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Netflix, Inc.
+ * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -14,8 +14,10 @@
 package com.jakewharton.rxrelay2;
 
 import io.reactivex.Observer;
+import io.reactivex.annotations.CheckReturnValue;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.subjects.PublishSubject;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -43,14 +45,15 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class PublishRelay<T> extends Relay<T> {
     /** An empty subscribers array to avoid allocating it all the time. */
     @SuppressWarnings("rawtypes")
-    private static final PublishDisposable[] EMPTY = new PublishDisposable[0];
+    static final PublishDisposable[] EMPTY = new PublishDisposable[0];
 
     /** The array of currently subscribed subscribers. */
-    private final AtomicReference<PublishDisposable<T>[]> subscribers;
+    final AtomicReference<PublishDisposable<T>[]> subscribers;
 
     /**
      * Constructs a PublishRelay.
      */
+    @CheckReturnValue
     @NonNull
     public static <T> PublishRelay<T> create() {
         return new PublishRelay<T>();
@@ -59,13 +62,13 @@ public final class PublishRelay<T> extends Relay<T> {
     /**
      * Constructs a PublishRelay.
      */
-    @SuppressWarnings("unchecked") private PublishRelay() {
+    @SuppressWarnings("unchecked")
+    PublishRelay() {
         subscribers = new AtomicReference<PublishDisposable<T>[]>(EMPTY);
     }
 
-
     @Override
-    public void subscribeActual(Observer<? super T> t) {
+    protected void subscribeActual(Observer<? super T> t) {
         PublishDisposable<T> ps = new PublishDisposable<T>(t, this);
         t.onSubscribe(ps);
         add(ps);
@@ -80,7 +83,7 @@ public final class PublishRelay<T> extends Relay<T> {
      * Adds the given subscriber to the subscribers array atomically.
      * @param ps the subscriber to add
      */
-    private void add(PublishDisposable<T> ps) {
+    void add(PublishDisposable<T> ps) {
         for (;;) {
             PublishDisposable<T>[] a = subscribers.get();
             int n = a.length;
@@ -158,7 +161,7 @@ public final class PublishRelay<T> extends Relay<T> {
 
         private static final long serialVersionUID = 3562861878281475070L;
         /** The actual subscriber. */
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         /** The subject state. */
         final PublishRelay<T> parent;
 
@@ -168,13 +171,13 @@ public final class PublishRelay<T> extends Relay<T> {
          * @param parent the parent PublishProcessor
          */
         PublishDisposable(Observer<? super T> actual, PublishRelay<T> parent) {
-            this.actual = actual;
+            this.downstream = actual;
             this.parent = parent;
         }
 
-        void onNext(T t) {
+        public void onNext(T t) {
             if (!get()) {
-                actual.onNext(t);
+                downstream.onNext(t);
             }
         }
 
