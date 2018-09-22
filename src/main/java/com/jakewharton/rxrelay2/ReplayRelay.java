@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Netflix, Inc.
+ * Copyright (c) 2016-present, RxJava Contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -15,6 +15,7 @@ package com.jakewharton.rxrelay2;
 
 import io.reactivex.Observer;
 import io.reactivex.Scheduler;
+import io.reactivex.annotations.CheckReturnValue;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
@@ -64,6 +65,7 @@ public final class ReplayRelay<T> extends Relay<T> {
      * and latency. This can be avoided with the {@link #create(int)} overload which takes an initial capacity
      * parameter and can be tuned to reduce the array reallocation frequency as needed.
      */
+    @CheckReturnValue
     @NonNull
     public static <T> ReplayRelay<T> create() {
         return new ReplayRelay<T>(new UnboundedReplayBuffer<T>(16));
@@ -81,6 +83,7 @@ public final class ReplayRelay<T> extends Relay<T> {
      * @param capacityHint
      *          the initial buffer capacity
      */
+    @CheckReturnValue
     @NonNull
     public static <T> ReplayRelay<T> create(int capacityHint) {
         return new ReplayRelay<T>(new UnboundedReplayBuffer<T>(capacityHint));
@@ -103,6 +106,7 @@ public final class ReplayRelay<T> extends Relay<T> {
      * @param maxSize
      *          the maximum number of buffered items
      */
+    @CheckReturnValue
     @NonNull
     public static <T> ReplayRelay<T> createWithSize(int maxSize) {
         return new ReplayRelay<T>(new SizeBoundReplayBuffer<T>(maxSize));
@@ -150,6 +154,7 @@ public final class ReplayRelay<T> extends Relay<T> {
      * @param scheduler
      *          the {@link Scheduler} that provides the current time
      */
+    @CheckReturnValue
     @NonNull
     public static <T> ReplayRelay<T> createWithTime(long maxAge, TimeUnit unit, Scheduler scheduler) {
         return new ReplayRelay<T>(new SizeAndTimeBoundReplayBuffer<T>(Integer.MAX_VALUE, maxAge, unit, scheduler));
@@ -186,6 +191,7 @@ public final class ReplayRelay<T> extends Relay<T> {
      * @param scheduler
      *          the {@link Scheduler} that provides the current time
      */
+    @CheckReturnValue
     @NonNull
     public static <T> ReplayRelay<T> createWithTimeAndSize(long maxAge, TimeUnit unit, Scheduler scheduler, int maxSize) {
         return new ReplayRelay<T>(new SizeAndTimeBoundReplayBuffer<T>(maxSize, maxAge, unit, scheduler));
@@ -246,6 +252,23 @@ public final class ReplayRelay<T> extends Relay<T> {
         return buffer.getValue();
     }
 
+    /**
+     * Makes sure the item cached by the head node in a bounded
+     * ReplayRelay is released (as it is never part of a replay).
+     * <p>
+     * By default, live bounded buffers will remember one item before
+     * the currently receivable one to ensure subscribers can always
+     * receive a continuous sequence of items. A terminated ReplaySubject
+     * automatically releases this inaccessible item.
+     * <p>
+     * The method must be called sequentially, similar to the standard
+     * {@code onXXX} methods.
+     * @since 2.1
+     */
+    public void cleanupBuffer() {
+        buffer.trimHead();
+    }
+
     /** An empty array to avoid allocation in getValues(). */
     private static final Object[] EMPTY_ARRAY = new Object[0];
 
@@ -253,7 +276,6 @@ public final class ReplayRelay<T> extends Relay<T> {
      * Returns an Object array containing snapshot all values of the Relay.
      * <p>The method is thread-safe.
      */
-    @NonNull
     public Object[] getValues() {
         @SuppressWarnings("unchecked")
         T[] a = (T[])EMPTY_ARRAY;
@@ -351,12 +373,14 @@ public final class ReplayRelay<T> extends Relay<T> {
         T getValue();
 
         T[] getValues(T[] array);
+
+        void trimHead();
     }
 
     static final class ReplayDisposable<T> extends AtomicInteger implements Disposable {
 
         private static final long serialVersionUID = 466549804534799122L;
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final ReplayRelay<T> state;
 
         Object index;
@@ -364,7 +388,7 @@ public final class ReplayRelay<T> extends Relay<T> {
         volatile boolean cancelled;
 
         ReplayDisposable(Observer<? super T> actual, ReplayRelay<T> state) {
-            this.actual = actual;
+            this.downstream = actual;
             this.state = state;
         }
 
@@ -401,6 +425,11 @@ public final class ReplayRelay<T> extends Relay<T> {
         public void add(T value) {
             buffer.add(value);
             size++;
+        }
+
+        @Override
+        public void trimHead() {
+            // no-op in this type of buffer
         }
 
         @Override
@@ -448,7 +477,7 @@ public final class ReplayRelay<T> extends Relay<T> {
 
             int missed = 1;
             final List<T> b = buffer;
-            final Observer<? super T> a = rs.actual;
+            final Observer<? super T> a = rs.downstream;
 
             Integer indexObject = (Integer)rs.index;
             int index;
@@ -477,7 +506,7 @@ public final class ReplayRelay<T> extends Relay<T> {
 
                     T o = b.get(index);
 
-                    a.onNext((T)o);
+                    a.onNext(o);
                     index++;
                 }
 
@@ -496,8 +525,7 @@ public final class ReplayRelay<T> extends Relay<T> {
 
         @Override
         public int size() {
-            int s = size;
-            return s != 0 ? s : 0;
+            return size;
         }
     }
 
@@ -568,6 +596,20 @@ public final class ReplayRelay<T> extends Relay<T> {
             trim();
         }
 
+        /**
+         * Replace a non-empty head node with an empty one to
+         * allow the GC of the inaccessible old value.
+         */
+        @Override
+        public void trimHead() {
+            Node<T> h = head;
+            if (h.value != null) {
+                Node<T> n = new Node<T>(null);
+                n.lazySet(h.get());
+                head = n;
+            }
+        }
+
         @Override
         @Nullable
         @SuppressWarnings("unchecked")
@@ -603,7 +645,7 @@ public final class ReplayRelay<T> extends Relay<T> {
                 int i = 0;
                 while (i != s) {
                     Node<T> next = h.get();
-                    array[i] = (T)next.value;
+                    array[i] = next.value;
                     i++;
                     h = next;
                 }
@@ -623,7 +665,7 @@ public final class ReplayRelay<T> extends Relay<T> {
             }
 
             int missed = 1;
-            final Observer<? super T> a = rs.actual;
+            final Observer<? super T> a = rs.downstream;
 
             Node<T> index = (Node<T>)rs.index;
             if (index == null) {
@@ -644,9 +686,7 @@ public final class ReplayRelay<T> extends Relay<T> {
                         break;
                     }
 
-                    T o = n.value;
-
-                    a.onNext((T)o);
+                    a.onNext(n.value);
 
                     index = n;
                 }
@@ -754,6 +794,20 @@ public final class ReplayRelay<T> extends Relay<T> {
             trim();
         }
 
+        /**
+         * Replace a non-empty head node with an empty one to
+         * allow the GC of the inaccessible old value.
+         */
+        @Override
+        public void trimHead() {
+            TimedNode<T> h = head;
+            if (h.value != null) {
+                TimedNode<T> n = new TimedNode<T>(null, 0);
+                n.lazySet(h.get());
+                head = n;
+            }
+        }
+
         @Override
         @Nullable
         @SuppressWarnings("unchecked")
@@ -768,14 +822,35 @@ public final class ReplayRelay<T> extends Relay<T> {
                 h = next;
             }
 
+            long limit = scheduler.now(unit) - maxAge;
+            if (h.time < limit) {
+                return null;
+            }
+
             return h.value;
+        }
+
+        TimedNode<T> getHead() {
+            TimedNode<T> index = head;
+            // skip old entries
+            long limit = scheduler.now(unit) - maxAge;
+            TimedNode<T> next = index.get();
+            while (next != null) {
+                long ts = next.time;
+                if (ts > limit) {
+                    break;
+                }
+                index = next;
+                next = index.get();
+            }
+            return index;
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public T[] getValues(T[] array) {
-            TimedNode<T> h = head;
-            int s = size();
+            TimedNode<T> h = getHead();
+            int s = size(h);
 
             if (s == 0) {
                 if (array.length != 0) {
@@ -809,22 +884,11 @@ public final class ReplayRelay<T> extends Relay<T> {
             }
 
             int missed = 1;
-            final Observer<? super T> a = rs.actual;
+            final Observer<? super T> a = rs.downstream;
 
             TimedNode<T> index = (TimedNode<T>)rs.index;
             if (index == null) {
-                index = head;
-                // skip old entries
-                long limit = scheduler.now(unit) - maxAge;
-                TimedNode<T> next = index.get();
-                while (next != null) {
-                    long ts = next.time;
-                    if (ts > limit) {
-                        break;
-                    }
-                    index = next;
-                    next = index.get();
-                }
+                index = getHead();
             }
 
             for (;;) {
@@ -868,8 +932,11 @@ public final class ReplayRelay<T> extends Relay<T> {
 
         @Override
         public int size() {
+            return size(getHead());
+        }
+
+        int size(TimedNode<T> h) {
             int s = 0;
-            TimedNode<T> h = head;
             while (s != Integer.MAX_VALUE) {
                 TimedNode<T> next = h.get();
                 if (next == null) {
