@@ -767,6 +767,11 @@ public final class ReplayRelay<T> extends Relay<T> {
                 }
                 h = next;
             }
+            long limit = scheduler.now(unit) - maxAge;
+
+            if(h.time < limit   ) {
+                return  null;
+            }
 
             return h.value;
         }
@@ -866,10 +871,30 @@ public final class ReplayRelay<T> extends Relay<T> {
             }
         }
 
+        public TimedNode<T> getHead() {
+            TimedNode<T> index = head;
+            long limit = scheduler.now(unit) - maxAge;
+            TimedNode<T> next = index.get();
+            while(next != null ) {
+                long currentNodeTime = next.time;
+                if(currentNodeTime > limit) {
+                    break;
+                }
+                index = next;
+                next = next.get();
+            }
+            return index;
+        }
+
+
         @Override
         public int size() {
+            return size(getHead()); 
+        }
+
+        public int size(TimedNode<T> node) {
             int s = 0;
-            TimedNode<T> h = head;
+            TimedNode<T> h = node;
             while (s != Integer.MAX_VALUE) {
                 TimedNode<T> next = h.get();
                 if (next == null) {
