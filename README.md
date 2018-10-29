@@ -37,8 +37,8 @@ Usage
     // observer will receive the "one", "two" and "three" events, but not "zero"
     BehaviorRelay<Object> relay = BehaviorRelay.createDefault("default");
     relay.accept("zero");
-    relay.accept("one");
     relay.subscribe(observer);
+    relay.accept("one");
     relay.accept("two");
     relay.accept("three");
     ```
