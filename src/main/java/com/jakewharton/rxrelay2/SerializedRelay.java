@@ -70,7 +70,7 @@ import io.reactivex.Observer;
                 }
                 queue = null;
             }
-            q.forEachAccept(actual);
+            q.accept(actual);
         }
     }
 

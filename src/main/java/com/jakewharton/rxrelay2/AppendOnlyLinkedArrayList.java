@@ -87,12 +87,8 @@ class AppendOnlyLinkedArrayList<T> {
         }
     }
 
-    /**
-     * Loops over all elements of the array until a null element is encountered.
-     * @param observer the observer of values
-     */
     @SuppressWarnings("unchecked")
-    void forEachAccept(Relay<? super T> observer) {
+    void accept(Relay<? super T> observer) {
         Object[] a = head;
         final int c = capacity;
         while (a != null) {
