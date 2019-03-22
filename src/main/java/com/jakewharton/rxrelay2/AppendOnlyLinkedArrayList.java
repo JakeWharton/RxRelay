@@ -88,7 +88,7 @@ class AppendOnlyLinkedArrayList<T> {
     }
 
     @SuppressWarnings("unchecked")
-    boolean accept(Relay<? super T> observer) {
+    void accept(Relay<? super T> observer) {
         Object[] a = head;
         final int c = capacity;
         while (a != null) {
@@ -102,6 +102,5 @@ class AppendOnlyLinkedArrayList<T> {
             }
             a = (Object[])a[c];
         }
-        return false;
     }
 }
