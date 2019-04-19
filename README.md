@@ -94,7 +94,7 @@ Maven:
 ```
 Gradle:
 ```groovy
-compile 'com.jakewharton.rxrelay2:rxrelay:2.1.0'
+implementation 'com.jakewharton.rxrelay2:rxrelay:2.1.0'
 ```
 
 Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
