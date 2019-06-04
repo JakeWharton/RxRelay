@@ -28,7 +28,7 @@ import io.reactivex.functions.Consumer;
  */
 public abstract class Relay<T> extends Observable<T> implements Consumer<T> {
     /** {@inheritDoc} */
-    @Override public abstract void accept(T value); // Redeclare without checked exception.
+    @Override public abstract void accept(@NonNull T value); // Redeclare without checked exception.
 
     /**
      * Returns true if the subject has any Observers.
