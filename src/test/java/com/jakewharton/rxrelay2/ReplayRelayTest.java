@@ -496,4 +496,71 @@ public class ReplayRelayTest {
         TestHelper.checkDisposed(
             ReplayRelay.createWithTimeAndSize(1, TimeUnit.SECONDS, Schedulers.single(), 10));
     }
+
+    @Test
+    public void timeAndSizeNoTerminalTruncationOnTimechange() {
+        ReplayRelay<Integer> rs = ReplayRelay.createWithTimeAndSize(1, TimeUnit.SECONDS, new TimesteppingScheduler(), 1);
+
+        TestObserver<Integer> to = rs.test();
+
+        rs.accept(1);
+        rs.cleanupBuffer();
+
+        to.assertNoErrors();
+    }
+
+    @Test
+    public void timeAndSizeNoTerminalTruncationOnTimechange2() {
+        ReplayRelay<Integer> rs = ReplayRelay.createWithTimeAndSize(1, TimeUnit.SECONDS, new TimesteppingScheduler(), 1);
+
+        TestObserver<Integer> to = rs.test();
+
+        rs.accept(1);
+        rs.cleanupBuffer();
+        rs.accept(2);
+        rs.cleanupBuffer();
+
+        to.assertNoErrors();
+    }
+
+    @Test
+    public void timeAndSizeNoTerminalTruncationOnTimechange3() {
+        ReplayRelay<Integer> rs = ReplayRelay.createWithTimeAndSize(1, TimeUnit.SECONDS, new TimesteppingScheduler(), 1);
+
+        TestObserver<Integer> to = rs.test();
+
+        rs.accept(1);
+        rs.accept(2);
+
+        to.assertNoErrors();
+    }
+
+    @Test
+    public void timeAndSizeNoTerminalTruncationOnTimechange4() {
+        ReplayRelay<Integer> rs = ReplayRelay.createWithTimeAndSize(1, TimeUnit.SECONDS, new TimesteppingScheduler(), 10);
+
+        TestObserver<Integer> to = rs.test();
+
+        rs.accept(1);
+        rs.accept(2);
+
+        to.assertNoErrors();
+    }
+
+    @Test
+    public void timeAndSizeRemoveCorrectNumberOfOld() {
+        TestScheduler scheduler = new TestScheduler();
+        ReplayRelay<Integer> rs = ReplayRelay.createWithTimeAndSize(1, TimeUnit.SECONDS, scheduler, 2);
+
+        rs.accept(1);
+        rs.accept(2);
+        rs.accept(3); // remove 1 due to maxSize, size == 2
+
+        scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
+
+        rs.accept(4); // remove 2 due to maxSize, remove 3 due to age, size == 1
+        rs.accept(5); // size == 2
+
+        rs.test().assertValuesOnly(4, 5);
+    }
 }
