@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Version 2.1.1 *(2019-08-23)*
+----------------------------
+
+ * Fix: Prevent occasional NPE from ReplayRelay due to logic error.
+
+
 Version 2.1.0 *(2018-09-22)*
 ----------------------------
 
