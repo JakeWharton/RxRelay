@@ -766,6 +766,10 @@ public final class ReplayRelay<T> extends Relay<T> {
             TimedNode<T> h = head;
 
             for (;;) {
+                if (size <= 1) {
+                    head = h;
+                    break;
+                }
                 TimedNode<T> next = h.get();
                 if (next == null) {
                     head = h;
@@ -778,6 +782,7 @@ public final class ReplayRelay<T> extends Relay<T> {
                 }
 
                 h = next;
+                size--;
             }
 
         }
