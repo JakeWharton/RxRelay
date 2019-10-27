@@ -16,7 +16,8 @@ package com.jakewharton.rxrelay2;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Scheduler;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
 
 /**
  * Basic scheduler that produces an ever increasing {@link #now(TimeUnit)} value.
