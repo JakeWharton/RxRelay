@@ -17,7 +17,6 @@ import io.reactivex.Observer;
 import io.reactivex.annotations.CheckReturnValue;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.subjects.PublishSubject;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
