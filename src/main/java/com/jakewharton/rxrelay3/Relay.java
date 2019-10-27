@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.jakewharton.rxrelay2;
+package com.jakewharton.rxrelay3;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.annotations.CheckReturnValue;

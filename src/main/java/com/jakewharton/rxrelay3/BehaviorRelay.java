@@ -11,9 +11,9 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.jakewharton.rxrelay2;
+package com.jakewharton.rxrelay3;
 
-import com.jakewharton.rxrelay2.AppendOnlyLinkedArrayList.NonThrowingPredicate;
+import com.jakewharton.rxrelay3.AppendOnlyLinkedArrayList.NonThrowingPredicate;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.annotations.CheckReturnValue;
 import io.reactivex.rxjava3.annotations.NonNull;
