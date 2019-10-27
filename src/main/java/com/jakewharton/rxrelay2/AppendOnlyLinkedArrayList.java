@@ -13,7 +13,7 @@
 
 package com.jakewharton.rxrelay2;
 
-import io.reactivex.functions.Predicate;
+import io.reactivex.rxjava3.functions.Predicate;
 
 /**
  * A linked-array-list implementation that only supports appending and consumption.

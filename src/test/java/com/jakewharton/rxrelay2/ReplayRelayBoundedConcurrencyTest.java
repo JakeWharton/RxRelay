@@ -13,9 +13,9 @@
 
 package com.jakewharton.rxrelay2;
 
-import io.reactivex.Scheduler;
-import io.reactivex.observers.DefaultObserver;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.observers.DefaultObserver;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;

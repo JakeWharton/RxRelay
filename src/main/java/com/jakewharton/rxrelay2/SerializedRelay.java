@@ -13,7 +13,7 @@
 
 package com.jakewharton.rxrelay2;
 
-import io.reactivex.Observer;
+import io.reactivex.rxjava3.core.Observer;
 
 /**
  * Serializes calls to the Consumer methods.

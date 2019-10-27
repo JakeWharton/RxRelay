@@ -15,9 +15,8 @@ package com.jakewharton.rxrelay2;
 
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Scheduler;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.disposables.Disposables;
+import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 /**
  * Basic scheduler that produces an ever increasing {@link #now(TimeUnit)} value.
@@ -38,7 +37,7 @@ public class TimesteppingScheduler extends Scheduler {
         @Override
         public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
             run.run();
-            return Disposables.disposed();
+            return Disposable.disposed();
         }
 
         @Override

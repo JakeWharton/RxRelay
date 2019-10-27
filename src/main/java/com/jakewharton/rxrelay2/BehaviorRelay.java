@@ -14,11 +14,11 @@
 package com.jakewharton.rxrelay2;
 
 import com.jakewharton.rxrelay2.AppendOnlyLinkedArrayList.NonThrowingPredicate;
-import io.reactivex.Observer;
-import io.reactivex.annotations.CheckReturnValue;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.annotations.Nullable;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.annotations.CheckReturnValue;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.annotations.Nullable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;

@@ -13,10 +13,10 @@
 
 package com.jakewharton.rxrelay2;
 
-import io.reactivex.Observable;
-import io.reactivex.annotations.CheckReturnValue;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.annotations.CheckReturnValue;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.functions.Consumer;
 
 /**
  * Represents a Consumer and an Observable at the same time, allowing
