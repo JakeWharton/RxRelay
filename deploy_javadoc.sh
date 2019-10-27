@@ -3,7 +3,7 @@
 set -ex
 
 REPO="git@github.com:JakeWharton/RxRelay.git"
-GROUP_ID="com.jakewharton.rxrelay2"
+GROUP_ID="com.jakewharton.rxrelay3"
 ARTIFACT_ID="rxrelay"
 
 DIR=temp-clone
