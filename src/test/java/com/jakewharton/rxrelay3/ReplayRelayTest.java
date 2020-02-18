@@ -228,6 +228,7 @@ public class ReplayRelayTest {
 
     }
 
+    @Test
     public void createInvalidCapacity() {
         try {
             ReplayRelay.create(-99);
