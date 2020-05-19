@@ -9,9 +9,9 @@
     <version>7</version>
   </parent>
 
-  <groupId>com.jakewharton.rxrelay2</groupId>
+  <groupId>com.jakewharton.rxrelay3</groupId>
   <artifactId>rxrelay</artifactId>
-  <version>2.1.2-SNAPSHOT</version>
+  <version>3.0.0-SNAPSHOT</version>
 
   <name>RxRelay</name>
   <description>Objects that are both an Observable and a Consumer.</description>
@@ -38,14 +38,14 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java.version>1.6</java.version>
+    <java.version>1.8</java.version>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>io.reactivex.rxjava2</groupId>
+      <groupId>io.reactivex.rxjava3</groupId>
       <artifactId>rxjava</artifactId>
-      <version>2.2.2</version>
+      <version>3.0.3</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

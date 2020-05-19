@@ -11,11 +11,12 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.jakewharton.rxrelay2;
+package com.jakewharton.rxrelay3;
 
-import io.reactivex.observers.TestObserver;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.observers.TestObserver;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.util.Arrays;
+import java.util.List;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -169,8 +170,10 @@ public class SerializedRelayTest {
 
             TestHelper.race(r1, r2, Schedulers.single());
 
-            ts.assertSubscribed().assertNoErrors().assertNotComplete()
-            .assertValueSet(Arrays.asList(1, 2));
+            List<Integer> actual = ts.assertNoErrors().assertNotComplete().values();
+            List<Integer> expected = Arrays.asList(1, 2);
+            assertTrue("The collections are not the same", actual.size() == expected.size()
+                    && actual.containsAll(expected) && expected.containsAll(actual));
         }
     }
 }

@@ -11,12 +11,12 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package com.jakewharton.rxrelay2;
+package com.jakewharton.rxrelay3;
 
-import io.reactivex.Scheduler;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.CompositeException;
-import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.exceptions.CompositeException;
+import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,8 +37,8 @@ public enum TestHelper {
      * @return the mocked observer
      */
     @SuppressWarnings("unchecked")
-    public static <T> io.reactivex.Observer<T> mockObserver() {
-        return mock(io.reactivex.Observer.class);
+    public static <T> io.reactivex.rxjava3.core.Observer<T> mockObserver() {
+        return mock(io.reactivex.rxjava3.core.Observer.class);
     }
 
     /**
@@ -113,10 +113,10 @@ public enum TestHelper {
      * isDisposed properly before and after calling dispose.
      * @param source the source to test
      */
-    public static void checkDisposed(io.reactivex.Observable<?> source) {
+    public static void checkDisposed(io.reactivex.rxjava3.core.Observable<?> source) {
         final Boolean[] b = { null, null };
         final CountDownLatch cdl = new CountDownLatch(1);
-        source.subscribe(new io.reactivex.Observer<Object>() {
+        source.subscribe(new io.reactivex.rxjava3.core.Observer<Object>() {
 
             @Override public void onSubscribe(Disposable d) {
                 try {
