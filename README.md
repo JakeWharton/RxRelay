@@ -84,17 +84,17 @@ See [the Javadoc][docs] for more information.
 Download
 --------
 
+Gradle:
+```groovy
+implementation 'com.jakewharton.rxrelay3:rxrelay:3.0.0'
+```
 Maven:
 ```xml
 <dependency>
-  <groupId>com.jakewharton.rxrelay2</groupId>
+  <groupId>com.jakewharton.rxrelay3</groupId>
   <artifactId>rxrelay</artifactId>
-  <version>2.1.1</version>
+  <version>3.0.0</version>
 </dependency>
-```
-Gradle:
-```groovy
-implementation 'com.jakewharton.rxrelay2:rxrelay:2.1.1'
 ```
 
 Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
