@@ -138,7 +138,7 @@ public final class PublishRelay<T> extends Relay<T> {
     }
 
     @Override
-    public void accept(T value) {
+    public void accept(@NonNull T value) {
         if (value == null) throw new NullPointerException("value == null");
         for (PublishDisposable<T> s : subscribers.get()) {
             s.onNext(value);

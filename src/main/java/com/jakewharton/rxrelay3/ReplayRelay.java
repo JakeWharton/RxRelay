@@ -223,7 +223,7 @@ public final class ReplayRelay<T> extends Relay<T> {
     }
 
     @Override
-    public void accept(T value) {
+    public void accept(@NonNull T value) {
         if (value == null) throw new NullPointerException("value == null");
 
         ReplayBuffer<T> b = buffer;
