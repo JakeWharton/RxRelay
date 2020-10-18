@@ -417,7 +417,7 @@ public final class ReplayRelay<T> extends Relay<T> {
         volatile int size;
 
         UnboundedReplayBuffer(int capacityHint) {
-            if (capacityHint <= 0) throw new IllegalArgumentException("capacityHint <= 0");
+            if (capacityHint <= 0) throw new IllegalArgumentException("capacityHint > 0 required but it was " + capacityHint);
             this.buffer = new ArrayList<T>(capacityHint);
         }
 
