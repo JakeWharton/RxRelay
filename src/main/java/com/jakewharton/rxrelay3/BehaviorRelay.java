@@ -87,7 +87,7 @@ public final class BehaviorRelay<T> extends Relay<T> {
      */
     @CheckReturnValue
     @NonNull
-    public static <T> BehaviorRelay<T> createDefault(T defaultValue) {
+    public static <T> BehaviorRelay<T> createDefault(@NonNull T defaultValue) {
         return new BehaviorRelay<T>(defaultValue);
     }
 
@@ -108,7 +108,7 @@ public final class BehaviorRelay<T> extends Relay<T> {
      * @param defaultValue the initial value, not null (verified)
      * @throws NullPointerException if {@code defaultValue} is null
      */
-    BehaviorRelay(T defaultValue) {
+    BehaviorRelay(@NonNull T defaultValue) {
         this();
         if (defaultValue == null) throw new NullPointerException("defaultValue == null");
         value.lazySet(defaultValue);
@@ -127,7 +127,7 @@ public final class BehaviorRelay<T> extends Relay<T> {
     }
 
     @Override
-    public void accept(T value) {
+    public void accept(@NonNull T value) {
         if (value == null) throw new NullPointerException("value == null");
 
         setCurrent(value);
@@ -257,7 +257,7 @@ public final class BehaviorRelay<T> extends Relay<T> {
         }
     }
 
-    void setCurrent(T o) {
+    void setCurrent(@NonNull T o) {
         writeLock.lock();
         index++;
         value.lazySet(o);
