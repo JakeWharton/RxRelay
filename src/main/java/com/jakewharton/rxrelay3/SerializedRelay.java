@@ -13,6 +13,7 @@
 
 package com.jakewharton.rxrelay3;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 
 /**
@@ -41,7 +42,7 @@ import io.reactivex.rxjava3.core.Observer;
 
 
     @Override
-    public void accept(T value) {
+    public void accept(@NonNull T value) {
         synchronized (this) {
             if (emitting) {
                 AppendOnlyLinkedArrayList<T> q = queue;
