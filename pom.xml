@@ -11,7 +11,7 @@
 
   <groupId>com.jakewharton.rxrelay3</groupId>
   <artifactId>rxrelay</artifactId>
-  <version>3.0.1</version>
+  <version>3.0.2-SNAPSHOT</version>
 
   <name>RxRelay</name>
   <description>Objects that are both an Observable and a Consumer.</description>
