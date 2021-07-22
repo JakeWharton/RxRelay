@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 3.0.1 *(2021-07-22)*
+----------------------------
+
+ * Fix: Change `BehaviorRelay#getValue` return type to be non-nullable.
+ * Add more nullability annotations to public API surface.
+
+
 Version 3.0.0 *(2020-05-19)*
 ----------------------------
 

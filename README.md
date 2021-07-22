@@ -86,14 +86,14 @@ Download
 
 Gradle:
 ```groovy
-implementation 'com.jakewharton.rxrelay3:rxrelay:3.0.0'
+implementation 'com.jakewharton.rxrelay3:rxrelay:3.0.1'
 ```
 Maven:
 ```xml
 <dependency>
   <groupId>com.jakewharton.rxrelay3</groupId>
   <artifactId>rxrelay</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
 </dependency>
 ```
 
