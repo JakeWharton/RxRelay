@@ -1,0 +1,27 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath libs.mavenPublishPlugin
+  }
+}
+
+apply plugin: 'java-library'
+apply plugin: 'com.vanniktech.maven.publish'
+
+dependencies {
+  api libs.rxjava3
+
+  testImplementation libs.junit
+  testImplementation libs.mockito
+}
+
+java {
+  sourceCompatibility = '1.8'
+  targetCompatibility = '1.8'
+}
+
+repositories {
+  mavenCentral()
+}
