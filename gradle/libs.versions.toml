@@ -1,5 +1,5 @@
 [libraries]
-mavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.34.0"
+mavenPublishPlugin = "com.vanniktech:gradle-maven-publish-plugin:0.35.0"
 
 rxjava3 = "io.reactivex.rxjava3:rxjava:3.1.12"
 
