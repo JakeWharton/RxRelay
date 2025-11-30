@@ -26,7 +26,7 @@ jobs:
 
       - name: Extract release notes
         id: extract-release-notes
-        uses: ffurrer2/extract-release-notes@v2
+        uses: ffurrer2/extract-release-notes@v3
         with:
           release_notes_file: RELEASE_NOTES.md
 
